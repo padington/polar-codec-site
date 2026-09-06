@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Polar coordinates for round video: what the literature says</title>
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body><div class="wrap">
+<header class="top"><a class="back" href="../index.html">&larr; Back to the overview</a>
+<h1>Polar coordinates for round video: what the literature says</h1><p class="sub">Annotated bibliography for the polar-codec experiment. Every entry was checked against the original source on 2026-09-06.</p></header>
+<nav class="toc"><h2>Contents (by lens and source)</h2><ul>
+<li><a href="#lens-1-polar-log-polar-space-variant-video-coding-and-non-translational-motion-models">Lens 1. Polar / log-polar / space-variant video coding and non-translational motion models</a><ul>
+<li><a href="#weiman-1990-the-origin-of-log-polar-video-compression">Weiman 1990 - the origin of "log-polar video compression"</a></li>
+<li><a href="#geisler-perry-1998-real-time-foveated-video-stays-cartesian">Geisler &amp; Perry 1998 - real-time foveated video stays Cartesian</a></li>
+<li><a href="#li-et-al-2021-log-polar-into-a-standard-codec-flickers-a-rectilinear-friendly-warp-is-10-cheaper">Li et al. 2021 - log-polar into a standard codec flickers; a rectilinear-friendly warp is 10 % cheaper</a></li>
+<li><a href="#schwarz-behnke-2025-modern-foveated-compression-qp-map-in-an-unmodified-hevc">Schwarz &amp; Behnke 2025 - modern foveated compression = QP map in an unmodified HEVC</a></li>
+<li><a href="#eichenseer-et-al-2015-radial-aware-motion-search-for-fisheye-1-db">Eichenseer et al. 2015 - radial-aware motion search for fisheye: ~1 dB</a></li>
+<li><a href="#eichenseer-baetz-kaup-2019-journal-version-15-db-periphery-is-the-hard-part">Eichenseer, Baetz &amp; Kaup 2019 - journal version, ~1.5 dB, periphery is the hard part</a></li>
+<li><a href="#eichenseer-kaup-2014-warp-toward-rectilinear-before-hevc-gains-1-db">Eichenseer &amp; Kaup 2014 - warp toward rectilinear before HEVC gains ~1 dB</a></li>
+<li><a href="#ahmmed-hannuksela-gabbouj-2016-fully-deformable-motion-on-fisheye-at-most-65">Ahmmed, Hannuksela &amp; Gabbouj 2016 - fully deformable motion on fisheye: at most 6.5 %</a></li>
+<li><a href="#jin-saxena-budagavi-2015-samsung-lens-aware-warped-motion-inside-hevc">Jin, Saxena &amp; Budagavi 2015 - Samsung: lens-aware warped motion inside HEVC</a></li>
+<li><a href="#vishwanath-rose-he-ye-2018-the-one-big-geometry-aware-gain-115-needs-a-badly-warped-projection">Vishwanath, Rose, He &amp; Ye 2018 - the one big geometry-aware gain (~11.5 %) needs a badly warped projection</a></li>
+<li><a href="#360-degree-projection-formats-uniform-sampling-wins">360-degree projection formats - uniform sampling wins</a></li>
+<li><a href="#av1-warped-motion-rotationzoom-are-already-in-the-codec-worth-1-on-average">AV1 warped motion - rotation/zoom are already in the codec, worth ~1 % on average</a></li>
+<li><a href="#affine-motion-in-hevcvvc-1-2-average-10-20-only-on-rotationzoom-heavy-clips">Affine motion in HEVC/VVC - 1-2 % average, 10-20 % only on rotation/zoom-heavy clips</a></li>
+<li><a href="#global-motion-compensation-big-gains-only-for-a-moving-camera-over-a-static-scene">Global motion compensation - big gains only for a moving camera over a static scene</a></li>
+<li><a href="#ng-po-cheung-wong-2010-explicit-rotation-search-angles-are-small-in-talking-head-video">Ng, Po, Cheung &amp; Wong 2010 - explicit rotation search: angles are small in talking-head video</a></li>
+<li><a href="#fourier-mellin-log-polar-as-an-estimator-not-a-coding-domain">Fourier-Mellin / log-polar as an estimator, not a coding domain</a></li>
+<li><a href="#iris-biometrics-the-only-field-that-stored-a-disc-unwrapped-in-polar-form-and-moved-back">Iris biometrics - the only field that stored a disc "unwrapped" in polar form, and moved back</a></li>
+</ul>
+</li>
+<li><a href="#lens-2-still-image-coding-in-polar-log-polar-disc-native-bases">Lens 2. Still-image coding in polar / log-polar / disc-native bases</a><ul>
+<li><a href="#traver-bernardino-2010-thirty-years-of-log-polar-imaging-no-rate-distortion-result">Traver &amp; Bernardino 2010 - thirty years of log-polar imaging, no rate-distortion result</a></li>
+<li><a href="#weiman-1990-us-5103306-see-lens-1">Weiman 1990 / US 5,103,306 - see Lens 1</a></li>
+<li><a href="#berton-sandini-metta-2006-real-log-polar-silicon-fewer-pixels-a-seam-at-the-fovea-no-market">Berton, Sandini &amp; Metta 2006 - real log-polar silicon: fewer pixels, a seam at the fovea, no market</a></li>
+<li><a href="#isoiec-19794-62005-the-one-standardised-polar-still-image-format">ISO/IEC 19794-6:2005 - the one standardised polar still-image format</a></li>
+<li><a href="#daugman-downing-2008-the-inventor-of-iris-recognition-rejects-polar-images-as-an-interchange-format">Daugman &amp; Downing 2008 - the inventor of iris recognition rejects polar images as an interchange format</a></li>
+<li><a href="#rakshit-monro-2007-polar-iris-strips-compress-well-because-the-consumer-is-a-matcher">Rakshit &amp; Monro 2007 - polar iris strips compress well because the consumer is a matcher</a></li>
+<li><a href="#uhl-group-2009-2012-polar-images-have-anisotropic-statistics-stock-codec-tuning-is-wrong-for-them">Uhl group 2009 / 2012 - polar images have anisotropic statistics; stock codec tuning is wrong for them</a></li>
+<li><a href="#solar-orbiter-metis-the-one-flying-polar-re-ordering-compressor-is-a-lossless-permutation">Solar Orbiter Metis - the one flying polar re-ordering compressor is a lossless permutation</a></li>
+<li><a href="#eichenseer-kaup-2014-see-lens-1">Eichenseer &amp; Kaup 2014 - see Lens 1</a></li>
+<li><a href="#360-degree-polar-caps-in-square-faces-pad-the-corners-never-warp-the-circle">360-degree polar caps in square faces: pad the corners, never warp the circle</a></li>
+<li><a href="#jpeg-2000-maxshift-roi-the-still-image-baseline-for-disc-matters-corners-dont">JPEG 2000 Maxshift ROI - the still-image baseline for "disc matters, corners don't"</a></li>
+<li><a href="#wang-bovik-2001-centre-weighted-still-coding-pays-only-at-extreme-rates">Wang &amp; Bovik 2001 - centre-weighted still coding pays only at extreme rates</a></li>
+<li><a href="#jpeg-xl-saliency-ordering-centre-first-is-delivery-order-not-fewer-bytes">JPEG XL saliency ordering - "centre first" is delivery order, not fewer bytes</a></li>
+<li><a href="#fong-20152024-the-family-of-disc-to-square-maps-and-their-distinct-properties">Fong 2015/2024 - the family of disc-to-square maps and their distinct properties</a></li>
+<li><a href="#varjo-2024-patent-industry-still-tries-log-polar-before-a-codec-with-a-geometric-fix-and-no-data">Varjo 2024 patent - industry still tries log-polar before a codec, with a geometric fix and no data</a></li>
+<li><a href="#disc-native-transform-bases-mathematically-right-no-fast-transform-no-codec">Disc-native transform bases - mathematically right, no fast transform, no codec</a></li>
+<li><a href="#ba-goyal-20062007-when-polar-coordinates-beat-linear-transform-coding-in-signal-space">Ba &amp; Goyal 2006/2007 - when polar coordinates beat linear transform coding (in signal space)</a></li>
+</ul>
+</li>
+<li><a href="#lens-3-why-the-pipeline-is-rectangular-and-where-non-rectangular-thinking-actually-shipped">Lens 3. Why the pipeline is rectangular, and where non-rectangular thinking actually shipped</a><ul>
+<li><a href="#bayer-1976-wikipedia-colour-capture-starts-on-a-square-grid">Bayer 1976 / Wikipedia - colour capture starts on a square grid</a></li>
+<li><a href="#block-codecs-are-square-block-machines-h264-hevc-av1">Block codecs are square-block machines (H.264 / HEVC / AV1)</a></li>
+<li><a href="#phone-hardware-encoders-roi-only-as-rectangles-block-qp-offsets-android-v4l2">Phone hardware encoders: ROI only as rectangles / block QP offsets (Android, V4L2)</a></li>
+<li><a href="#apple-videotoolbox-no-roi-qp-map-input-at-all">Apple VideoToolbox: no ROI / QP-map input at all</a></li>
+<li><a href="#software-encoders-per-macroblock-qp-offsets-are-a-first-class-api-x264-ffmpeg-addroi">Software encoders: per-macroblock QP offsets are a first-class API (x264, FFmpeg addroi)</a></li>
+<li><a href="#round-smartwatches-render-into-a-square-frame-buffer">Round smartwatches render into a square frame buffer</a></li>
+<li><a href="#apples-own-circular-display-patent-explains-why-panels-are-rectangular">Apple's own circular-display patent explains why panels are rectangular</a></li>
+<li><a href="#log-polar-silicon-exists-and-did-not-catch-on-see-berton-sandini-metta-2006-lens-2">Log-polar silicon exists and did not catch on - see Berton, Sandini &amp; Metta 2006 (Lens 2)</a></li>
+<li><a href="#daala-pvq-polar-that-shipped-in-a-codec-lives-in-coefficient-space">Daala PVQ - "polar" that shipped in a codec lives in coefficient space</a></li>
+<li><a href="#vvc-geometric-partitioning-mode-a-heavily-engineered-non-rectangular-tool-is-worth-1">VVC Geometric Partitioning Mode - a heavily engineered non-rectangular tool is worth ~1 %</a></li>
+<li><a href="#foveated-rendering-at-consumer-scale-quest-pro-26-52-gpu-on-a-rectangular-render-target">Foveated rendering at consumer scale (Quest Pro) - 26-52 % GPU, on a rectangular render target</a></li>
+<li><a href="#gaze-steered-qp-in-ordinary-h264-up-to-63-at-jnd-but-only-with-live-gaze">Gaze-steered QP in ordinary H.264 - up to 63 % at JND, but only with live gaze</a></li>
+<li><a href="#hsiao-et-al-2022-non-uniform-allocation-is-a-latency-problem-not-a-geometry-problem">Hsiao et al. 2022 - non-uniform allocation is a latency problem, not a geometry problem</a></li>
+<li><a href="#qualcomm-2005-patent-faceroi-bit-allocation-for-video-telephony-is-old-industry-practice">Qualcomm 2005 patent - face/ROI bit allocation for video telephony is old industry practice</a></li>
+<li><a href="#shirley-chiu-1997-the-concentric-map-was-designed-for-sampling-not-compression">Shirley &amp; Chiu 1997 - the concentric map was designed for sampling, not compression</a></li>
+</ul>
+</li>
+<li><a href="#bottom-line-across-all-three-lenses">Bottom line across all three lenses</a></li>
+</ul></nav><p>Annotated bibliography for the polar-codec project. Every entry below was checked
+against the original source (full text, abstract page, or publisher/index record)
+on 2026-09-06. Where only a snippet or index record could be reached, the entry
+says so. Numbers that could not be confirmed were removed.</p>
+<p><strong>Words used below.</strong> <em>Bitrate</em> = bytes per second of video. <em>PSNR</em> = a
+"how close to the original" score in dB; +1 dB is a clearly visible improvement.
+<em>BD-rate</em> = the average bitrate saving at equal quality (negative = fewer bytes).
+<em>QP</em> = the quantiser setting of a video codec; higher QP = fewer bytes, lower
+quality. <em>ROI</em> = region of interest, a part of the picture the encoder is told to
+treat as more important. <em>Foveation</em> = spending detail only where the viewer's
+eye is pointed, because the eye cannot resolve the periphery. <em>Block codec</em> =
+H.264 / HEVC / AV1 style coder that works on square pixel blocks.</p>
+<p>Project numbers referenced in the takeaways (30 real Telegram circles, x264,
+equal disc quality, plain square = 1.00): elliptical disc-to-square 1.37,
+Shirley-Chiu 1.62, polar equal-area 1.76, polar strip 1.82, polar rim-Nyquist
+2.03; resampling alone costs ~12 points, the 1.6x pixel budget alone +32 %;
+polar loss sits at the rim (-3.0 dB rim vs -0.6 dB centre); polar only wins on a
+synthetic 3 deg/frame spin (-14 %).</p>
+<hr />
+<h2 id="lens-1-polar-log-polar-space-variant-video-coding-and-non-translational-motion-models">Lens 1. Polar / log-polar / space-variant video coding and non-translational motion models</h2>
+<h3 id="weiman-1990-the-origin-of-log-polar-video-compression">Weiman 1990 - the origin of "log-polar video compression"</h3>
+<p><strong>C. F. R. Weiman, "Video compression via log polar mapping," Proc. SPIE 1295, Real-Time Image Processing II, 1990, doi:10.1117/12.21244.</strong> Same scheme in US patent 5,103,306 (Weiman &amp; Evans, filed 1990, granted 1992).
+Links: https://doi.org/10.1117/12.21244 ; https://patents.google.com/patent/US5103306A/en
+<em>Verified:</em> SPIE record + abstract snippet ("compressing real time color imagery by factors in the range of 1600-to-1 ... for remote driving ... match the resolution gradient of human vision"); patent full text read.
+- What they did: three-stage pipeline for remote driving: (1) log-polar resampling matched to the fall-off of human acuity ("approximately 25:1"), (2) split into low-res colour and 1-bit edge channels ("approximately 8:1"), (3) ordinary DCT/DPCM ("further 8:1"); product "approximately 1600:1". Ratios are design targets; no equal-quality PSNR comparison is reported.
+- For round selfies: the 25:1 polar stage throws away rim resolution on the assumption the operator looks at the centre. A circle message needs uniform quality across the disc (hair, chin, hands sit at the rim), so that stage is unavailable and only the resampling cost remains. This is the root of the "polar compresses" folklore.</p>
+<h3 id="geisler-perry-1998-real-time-foveated-video-stays-cartesian">Geisler &amp; Perry 1998 - real-time foveated video stays Cartesian</h3>
+<p><strong>W. S. Geisler, J. S. Perry, "Real-time foveated multiresolution system for low-bandwidth video communication," Proc. SPIE 3299, Human Vision and Electronic Imaging III, pp. 294-305, 1998, doi:10.1117/12.320120.</strong>
+Links: https://doi.org/10.1117/12.320120 ; free PDF https://svi.cps.utexas.edu/spie1998.pdf
+<em>Verified:</em> full text read.
+- What they did: foveated multiresolution-pyramid coder on a Pentium PC, 5-6 resolution regions around a mouse/eye-tracker fixation point, raised-cosine blending, motion compensation per level, contrast-sensitivity quantisation, zero-tree coding. Strong foveation = 19x fewer pyramid elements, moderate = 5.5x; ~20-25 fps at 256x256. "Claire" talking head: 0.043 bpp unfoveated (36.7 dB) vs 0.020 bpp foveated, and the authors write that foveation "only adds a little to the total compression because the motion is primarily confined to the unfoveated region". "Mall": 0.092 -&gt; 0.013 bpp (7x). They note that earlier real-time foveation systems (incl. Weiman) "used special purpose hardware".
+- For round selfies: a face-centred clip is exactly where foveation buys least, because the face already carries most of the bits. Expect single-digit savings from any rim-deprioritisation, and get them with a QP map, not a new pixel grid.</p>
+<h3 id="li-et-al-2021-log-polar-into-a-standard-codec-flickers-a-rectilinear-friendly-warp-is-10-cheaper">Li et al. 2021 - log-polar into a standard codec flickers; a rectilinear-friendly warp is 10 % cheaper</h3>
+<p><strong>D. Li, R. Du, A. Babu, C. D. Brumar, A. Varshney, "A Log-Rectilinear Transformation for Foveated 360-degree Video Streaming," IEEE TVCG 27(5):2638-2647, 2021 (IEEE VR 2021), doi:10.1109/TVCG.2021.3067762.</strong>
+Links: https://doi.org/10.1109/TVCG.2021.3067762 ; project page https://augmentariumlab.github.io/foveated-360-video/
+<em>Verified:</em> abstract via IEEE record, author PDF and project page.
+- What they did: client-server foveated 360-degree streaming for eye-tracked headsets; compared log-polar subsampling against a log-rectilinear transform with summed-area-table filtering, both fed to off-the-shelf codecs. Abstract: "conventional log-polar foveated rendering suffers from a number of visual artifacts such as aliasing and flickering"; the new transform "heavily reduces flickering compared to log-polar subsampling while also yielding an additional 10% reduction in bandwidth usage" (project page says 11 %).
+- For round selfies: the closest precedent to our pipeline (polar remap -&gt; x264) and an independent finding that a polar grid is a poor input for block codecs: rim/centre sampling changes create temporal shimmer that costs bits, matching our rim loss and the fact that the inverse warp does not denoise.</p>
+<h3 id="schwarz-behnke-2025-modern-foveated-compression-qp-map-in-an-unmodified-hevc">Schwarz &amp; Behnke 2025 - modern foveated compression = QP map in an unmodified HEVC</h3>
+<p><strong>M. Schwarz, S. Behnke, "Foveated Compression for Immersive Telepresence Visualization," IEEE Conference on Telepresence 2025, arXiv:2510.19848.</strong>
+Link: https://arxiv.org/abs/2510.19848
+<em>Verified:</em> abstract and full PDF read.
+- What they did: eye-tracking-driven QP delta map fed to an NVENC HEVC encoder (QP per 32x32 macroblock) in the NimbRo avatar system; "bandwidth can be reduced to a third without sacrificing immersion". They discuss the alternative, "foveated warping" (compress the periphery into less space, code, de-warp, with an axis-aligned variant to fill the codec's rectangular input), and note that "the warping introduces additional sampling effects" and requires de-warping, whereas QP modulation does not.
+- For round selfies: if the goal is "spend fewer bits on the rim", the proven tool is a QP/quality map (x264 zones/qpfile, AV1 delta-q), keeping the square grid. Even the foveation community treats pixel warping as the inferior option.</p>
+<h3 id="eichenseer-et-al-2015-radial-aware-motion-search-for-fisheye-1-db">Eichenseer et al. 2015 - radial-aware motion search for fisheye: ~1 dB</h3>
+<p><strong>A. Eichenseer, M. Baetz, J. Seiler, A. Kaup, "A Hybrid Motion Estimation Technique for Fisheye Video Sequences Based on Equisolid Re-Projection," IEEE ICIP 2015, pp. 3565-3569; arXiv:2211.16995.</strong>
+Link: https://arxiv.org/abs/2211.16995
+<em>Verified:</em> abstract.
+- What they did: block matching that back-projects into the perspective domain and re-projects with the equisolid fisheye model, chosen per block against ordinary translational matching. Average luma PSNR gain up to 1.14 dB (synthetic), 0.96 dB (real); best 2.40 / 1.39 dB.
+- For round selfies: fisheye is the industrial case of "round content with radial geometry" and the answer was to change the motion model inside the codec, not to resample into polar; even that gives ~1 dB. A selfie disc is a perspective image with almost no radial distortion, so a radial-aware model would gain less still.</p>
+<h3 id="eichenseer-baetz-kaup-2019-journal-version-15-db-periphery-is-the-hard-part">Eichenseer, Baetz &amp; Kaup 2019 - journal version, ~1.5 dB, periphery is the hard part</h3>
+<p><strong>A. Eichenseer, M. Baetz, A. Kaup, "Motion Estimation for Fisheye Video With an Application to Temporal Resolution Enhancement," IEEE TCSVT 29(8):2376-2390, 2019; arXiv:2303.00433.</strong>
+Link: https://arxiv.org/abs/2303.00433
+<em>Verified:</em> abstract.
+- What they did: extended the projection-aware block matching with peripheral handling and calibration data; average gains 1.45 dB (synthetic) / 1.51 dB (real) over conventional block matching; 0.79 / 0.76 dB for frame-rate up-conversion.
+- For round selfies: in every radial layout the outer ring is where prediction is worst; our guard-row (+11 points) and rim-Nyquist (2.03x) results are consistent. The literature's fix is better prediction in the periphery, not more pixels there.</p>
+<h3 id="eichenseer-kaup-2014-warp-toward-rectilinear-before-hevc-gains-1-db">Eichenseer &amp; Kaup 2014 - warp toward rectilinear before HEVC gains ~1 dB</h3>
+<p><strong>A. Eichenseer, A. Kaup, "Coding of distortion-corrected fisheye video sequences using H.265/HEVC," IEEE ICIP 2014, pp. 4132-4136; arXiv:2211.16967.</strong>
+Link: https://arxiv.org/abs/2211.16967
+<em>Verified:</em> abstract.
+- What they did: HEVC coding of fisheye video with distortion correction as pre-processing (rectify, code) versus post-processing (code fisheye, rectify after). Pre-processing gains: max 1.91 dB intra / 1.37 dB inter; average 1.16 dB intra / 0.95 dB inter.
+- For round selfies: the mirror image of our experiment. Warping <em>toward</em> straight lines and translational motion helped ~1 dB; warping <em>away</em> from them (polar strip) cost 82 % bytes. Block codecs want shape-preserving, straight-line motion. Note also that the intra gain exceeds the inter gain, so a still-image test would overstate a geometry effect relative to video.</p>
+<h3 id="ahmmed-hannuksela-gabbouj-2016-fully-deformable-motion-on-fisheye-at-most-65">Ahmmed, Hannuksela &amp; Gabbouj 2016 - fully deformable motion on fisheye: at most 6.5 %</h3>
+<p><strong>A. Ahmmed, M. M. Hannuksela, M. Gabbouj, "Fisheye video coding using elastic motion compensated reference frames," IEEE ICIP 2016, pp. 2027-2031, doi:10.1109/ICIP.2016.7532714.</strong>
+Link: https://ieeexplore.ieee.org/document/7532714/
+<em>Verified:</em> abstract (IEEE record and Tampere research portal).
+- What they did: elastic-motion warped prediction of the previous frame inserted as an extra reference picture in HM (low-delay P), no low-level tool changes; "savings in bit rate of up to 6.54% ... over standalone HEVC" (LectureB 1080x1080).
+- For round selfies: an upper bound on what sophisticated non-translational motion buys on round wide-angle content, even with a general deformable model: single digits, far below the +37 % (elliptical) / +82 % (polar) penalties of re-gridding.</p>
+<h3 id="jin-saxena-budagavi-2015-samsung-lens-aware-warped-motion-inside-hevc">Jin, Saxena &amp; Budagavi 2015 - Samsung: lens-aware warped motion inside HEVC</h3>
+<p><strong>G. Jin, A. Saxena, M. Budagavi, "Motion estimation and compensation for fisheye warped video," IEEE ICIP 2015, pp. 2751-2755, doi:10.1109/ICIP.2015.7351303.</strong>
+Link: https://doi.org/10.1109/ICIP.2015.7351303
+<em>Verified:</em> abstract via IEEE record; no numbers in abstract, full text paywalled.
+- What they did: warping motion compensation modelling the fisheye distortion; lens parameters sent once per sequence, per-block warping derived implicitly on both sides, "no block-level warping parameters are transmitted".
+- For round selfies: again geometry knowledge is injected into the motion model and the pixel grid is left alone. No bitrate figure is public, so treat it as design precedent only.</p>
+<h3 id="vishwanath-rose-he-ye-2018-the-one-big-geometry-aware-gain-115-needs-a-badly-warped-projection">Vishwanath, Rose, He &amp; Ye 2018 - the one big geometry-aware gain (~11.5 %) needs a badly warped projection</h3>
+<p><strong>B. Vishwanath, K. Rose, Y. He, Y. Ye, "Rotational Motion Compensated Prediction in HEVC Based Omnidirectional Video Coding," Picture Coding Symposium 2018, pp. 323-327, doi:10.1109/PCS.2018.8456296.</strong>
+Link: https://scl.ece.ucsb.edu/sites/default/files/publications/08456296_0.pdf
+<em>Verified:</em> full text read (Table I).
+- What they did: block motion as rotation along geodesics on the sphere inside HM-16.15, ERP input, WS-PSNR, random access. Y BD-rate vs HEVC: bicyclist -12.4 %, chair -15.9 %, glacier -17.9 %, brancastle -6.3 %, driving-in-country -11.4 %, kiteflite -5.4 %; average -11.5 %.
+- For round selfies: shows the size of the prize when a projection really breaks translational motion: ~10 %. A selfie disc is a plain perspective crop whose motion is already translational; re-projecting it into polar creates the very warping this paper had to fight.</p>
+<h3 id="360-degree-projection-formats-uniform-sampling-wins">360-degree projection formats - uniform sampling wins</h3>
+<p><strong>I. Hussain, O.-J. Kwon, S. Choi, "Evaluating the Coding Performance of 360 Image Projection Formats Using Objective Quality Metrics," Symmetry 13(1):80, 2021, doi:10.3390/sym13010080.</strong>
+<strong>F. Duanmu, Y. He, X. Xiu, P. Hanhart, Y. Ye, Y. Wang, "Hybrid Cubemap Projection Format for 360-Degree Video Coding," IEEE Data Compression Conference 2018, p. 404 (poster abstract), doi:10.1109/DCC.2018.00075.</strong>
+<strong>J.-L. Lin et al., "Efficient Projection and Coding Tools for 360 Video," IEEE JETCAS 9(1):84-97, 2019, doi:10.1109/JETCAS.2019.2899660.</strong>
+Links: https://doi.org/10.3390/sym13010080 ; https://ieeexplore.ieee.org/document/8416621/ ; https://ieeexplore.ieee.org/document/8643362/
+<em>Verified:</em> Hussain abstract (MDPI record); Duanmu/Hanhart author list and venue (IEEE record), 11.51 % / 8.0 % / 0.54 % vs ERP / CMP / ACP from the NYU Video Lab project page, not the paper body; Lin abstract (35.5 % Y BD-rate vs padded ERP in 360Lib-5.0/HM-16.16, together with 360-specific coding tools).
+- What they did: converted 360 content into many projection formats, coded with JPEG/JPEG 2000 (Hussain) or HM+360Lib (Duanmu, Lin) and compared end-to-end quality. The most uniformly sampled formats (hybrid equi-angular cubemap, equatorial cylindrical) code best.
+- For round selfies: a polar strip of a disc is the ERP problem in miniature (massively oversampled centre, a seam). Our equal-area-bands variant (1.76x) is the analogue of EAC/HEC and helped versus plain polar (1.82x), but cannot beat the square, which is already uniformly sampled.</p>
+<h3 id="av1-warped-motion-rotationzoom-are-already-in-the-codec-worth-1-on-average">AV1 warped motion - rotation/zoom are already in the codec, worth ~1 % on average</h3>
+<p><strong>S. Parker, Y. Chen, D. Barker, P. de Rivaz, D. Mukherjee, "Global and locally adaptive warped motion compensation in video compression," IEEE ICIP 2017, pp. 275-279, doi:10.1109/ICIP.2017.8296286.</strong>
+<strong>J. Han et al., "A Technical Overview of AV1," Proc. IEEE 109(9):1435-1462, 2021; arXiv:2008.06091.</strong>
+<strong>Visionular, "Performance analysis of AV1 encoding tools: libaom case study."</strong>
+Links: https://doi.org/10.1109/ICIP.2017.8296286 ; https://arxiv.org/abs/2008.06091 ; https://visionular.ai/performance-analysis-of-av1-encoding-tools-libaom-case-study/
+<em>Verified:</em> Parker abstract (IEEE/Semantic Scholar record: global motion mode + locally adaptive warped motion, affine/homographic); Han abstract ("&gt;30% reduction in bit-rate compared to ... VP9", "considerations for hardware feasibility"); Visionular page read.
+- What they did: AV1's frame-level global motion (affine/homographic) and block-level warped motion (affine derived from neighbouring MVs, no extra side info). Visionular measured tool-off deltas in libaom at cpu-used 3: warped motion 1.07 % BD-rate for ~2 % CPU; ~4 % on a rotating Netflix clip, ~8 % on "blue_sky"; global-motion pre-analysis was disabled at that preset.
+- For round selfies: head tilt and leaning in (rotation, zoom) are already modelled inside AV1 (and VVC affine) at zero cost to the pixel grid, worth ~1 % on ordinary content and up to ~8 % on genuinely rotating clips. Sets expectations for the pending AV1 test: the square should stay smallest.</p>
+<h3 id="affine-motion-in-hevcvvc-1-2-average-10-20-only-on-rotationzoom-heavy-clips">Affine motion in HEVC/VVC - 1-2 % average, 10-20 % only on rotation/zoom-heavy clips</h3>
+<p><strong>L. Li, H. Li, D. Liu, Z. Li, H. Yang, S. Lin, H. Chen, F. Wu, "An Efficient Four-Parameter Affine Motion Model for Video Coding," IEEE TCSVT 28(8):1934-1948, 2018; arXiv:1702.06297 (2017).</strong>
+<strong>K. Zhang, Y.-W. Chen, L. Zhang, W.-J. Chien, M. Karczewicz, "An Improved Framework of Affine Motion Compensation in Video Coding," IEEE TIP 28(3):1456-1469, 2019, doi:10.1109/TIP.2018.2877355.</strong>
+<strong>H. Yang, H. Chen, J. Chen, S. Esenlik, S. Sethuraman, X. Xiu, E. Alshina, J. Luo, "Subblock-Based Motion Derivation and Inter Prediction Refinement in the VVC Standard," IEEE TCSVT 31(10):3862-3877, 2021, doi:10.1109/TCSVT.2021.3100744.</strong>
+Links: https://arxiv.org/abs/1702.06297 ; https://doi.org/10.1109/TIP.2018.2877355 ; https://doi.org/10.1109/TCSVT.2021.3100744
+<em>Verified:</em> all three abstracts.
+- What they did: Li: 4-parameter affine (translation + rotation + uniform zoom) in HEVC, "11.1% and 19.3% bits saving for random access and low delay" on sequences with rich rotation/zoom. Zhang: adaptive 4/6-parameter models and unified merge (parts adopted in VVC), "1.67% BD rate savings in average for the random access configuration" under JVET CTC. Yang: the five VVC sub-block tools together give "5.7% bitrate reduction on average", "up to 13.4%" on large/complex-motion sequences.
+- For round selfies: standards bodies quantified exactly the motions a polar grid was meant to make cheap. On average content they are worth 1-2 %; only rotation/zoom-heavy clips reach 10-20 %. Hand-held selfies are dominated by small translations and jitter, so a coordinate change cannot recover more than a few percent even in theory.</p>
+<h3 id="global-motion-compensation-big-gains-only-for-a-moving-camera-over-a-static-scene">Global motion compensation - big gains only for a moving camera over a static scene</h3>
+<p><strong>T. Wiegand, E. Steinbach, B. Girod, "Affine multipicture motion-compensated prediction," IEEE TCSVT 15(2):197-209, 2005, doi:10.1109/TCSVT.2004.841690.</strong>
+<strong>F. Dufaux, J. Konrad, "Efficient, robust, and fast global motion estimation for video coding," IEEE TIP 9(3):497-501, 2000, doi:10.1109/83.826785.</strong>
+Links: https://web.stanford.edu/~bgirod/pdfs/WiegandCSVT2005.pdf ; https://ieeexplore.ieee.org/document/826785/
+<em>Verified:</em> Wiegand full text (abstract); Dufaux abstract via IEEE record.
+- What they did: Wiegand: several affine parameter sets per frame, whole reference pictures warped into a long-term multipicture buffer, ordinary block translation on top (H.263 TMN-10): "average bit-rate savings of 15%" with 20 warped references, 24 % with 20 warped + 10 decoded references over eight sequences, PSNR gains 0.8-3 dB. Dufaux &amp; Konrad: hierarchical, robust estimator from translation up to an 8-parameter perspective model for MPEG-4-style global motion compensation.
+- For round selfies: GMC pays for camera pan/zoom over static scenes. A circle message is the opposite: near-static background, moving foreground, small hand jitter. The design lesson carried into AV1's global-motion mode is the same, and its measured value on ordinary content is ~1 %.</p>
+<h3 id="ng-po-cheung-wong-2010-explicit-rotation-search-angles-are-small-in-talking-head-video">Ng, Po, Cheung &amp; Wong 2010 - explicit rotation search: angles are small in talking-head video</h3>
+<p><strong>K.-H. Ng, L.-M. Po, K.-W. Cheung, K.-M. Wong, "Block-Matching Translational and Rotational Motion Compensated Prediction Using Interpolated Reference Frame," EURASIP J. Advances in Signal Processing 2010:385631, doi:10.1155/2010/385631.</strong>
+Link: https://asp-eurasipjournals.springeropen.com/articles/10.1155/2010/385631
+<em>Verified:</em> abstract and body text (open access).
+- What they did: rotated reference blocks built by special sub-sampling of the interpolated reference frame, block matching over translation x angle. Body text: "up to 37% of the blocks can be better predicted with rotational MCP. The angle of rotation is usually small, especially for static video sequences like Akiyo"; Akiyo was the one sequence where rotational MCP at 1/8-pel did not beat translational MCP at 1/16-pel.
+- For round selfies: direct evidence that per-frame rotation in talking-head content is tiny. Our synthetic clips say the same from the other side: polar wins only at 3 deg/frame spin (-14 %) and loses at 1 deg/frame (+19 %).</p>
+<h3 id="fourier-mellin-log-polar-as-an-estimator-not-a-coding-domain">Fourier-Mellin / log-polar as an <em>estimator</em>, not a coding domain</h3>
+<p><strong>B. S. Reddy, B. N. Chatterji, "An FFT-based technique for translation, rotation, and scale-invariant image registration," IEEE TIP 5(8):1266-1271, 1996, doi:10.1109/83.506761.</strong>
+<strong>H. T. Ho, R. Goecke, "Optical flow estimation using Fourier Mellin Transform," IEEE CVPR 2008, pp. 1-8, doi:10.1109/CVPR.2008.4587553.</strong>
+Links: https://ieeexplore.ieee.org/document/506761/ ; https://ieeexplore.ieee.org/document/4587553/
+<em>Verified:</em> both abstracts via IEEE/ANU records.
+- What they did: Reddy &amp; Chatterji: phase correlation on the log-polar-resampled Fourier magnitude recovers rotation and scale, then phase correlation recovers translation ("excellent robustness against random noise"). Ho &amp; Goecke: applied per patch on a grid to estimate a full similarity-transform optical flow with sub-pixel accuracy.
+- For round selfies: this is the legitimate home of "polar maths" in video: as a motion estimator. A defensible way to keep the polar idea alive is a Fourier-Mellin rotation/zoom estimator feeding a standard codec's affine/warped mode (or a stabiliser), with pixels left on the square grid.</p>
+<h3 id="iris-biometrics-the-only-field-that-stored-a-disc-unwrapped-in-polar-form-and-moved-back">Iris biometrics - the only field that stored a disc "unwrapped" in polar form, and moved back</h3>
+<p><strong>S. Matschitsch, M. Tschinder, A. Uhl, "Comparison of Compression Algorithms' Impact on Iris Recognition Accuracy," ICB 2007, LNCS 4642, pp. 232-241, doi:10.1007/978-3-540-74549-5_25.</strong>
+<strong>J. Daugman, C. Downing, "Effect of severe image compression on iris recognition performance," IEEE TIFS 3(1):52-61, 2008 (Cambridge TR UCAM-CL-TR-685, 2007).</strong>
+<strong>P. Grother, "Quantitative Standardization of Iris Image Formats," BIOSIG 2009 (NIST IREX I).</strong>
+Links: https://www.cosy.sbg.ac.at/~uhl/iris07_final.pdf ; https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-685.pdf ; https://www.nist.gov/itl/iad/btg/irex-i
+<em>Verified:</em> Matschitsch full text ("polar images ... 2kB vs. 25-30kB for rectilinear images"); Daugman full report; IREX summary via NIST documents and Grother's paper.
+- What they did: compared JPEG / JPEG 2000 / SPIHT etc. on rectilinear vs polar (unwrapped) iris images for recognition accuracy; Daugman &amp; Downing pushed ROI-isolated rectilinear 320x320 images to 2,000 bytes ("net factor of 150") with only "2% to 3% of the bits in the IrisCode" changed. NIST IREX I found the cropped (K3) and cropped+masked (K7) rectilinear formats interoperable and the unsegmented polar (K16) format underperforming; the polar formats were dropped from the ISO/IEC 19794-6:2011 revision.
+- For round selfies: the closest literal "disc coded in polar coordinates" precedent is a still-image, single-purpose case where polar unwrapping was a cropping convenience, not a compression advantage, and the standard went back to rectilinear. No video-coding paper was found that codes a circular video in polar coordinates and reports an RD win.</p>
+<hr />
+<h2 id="lens-2-still-image-coding-in-polar-log-polar-disc-native-bases">Lens 2. Still-image coding in polar / log-polar / disc-native bases</h2>
+<h3 id="traver-bernardino-2010-thirty-years-of-log-polar-imaging-no-rate-distortion-result">Traver &amp; Bernardino 2010 - thirty years of log-polar imaging, no rate-distortion result</h3>
+<p><strong>V. J. Traver, A. Bernardino, "A review of log-polar imaging for visual perception in robotics," Robotics and Autonomous Systems 58(4):378-398, 2010.</strong>
+Link: https://vislab.isr.tecnico.ulisboa.pt/wp-content/uploads/2012/12/10-ras-traver.pdf
+<em>Verified:</em> full text read (229 references).
+- What they did: survey of log-polar (retina-like) imaging in tracking, attention, egomotion and 3D perception, including the origin singularity, over-sampling of the centre and lost invariances. Conclusion: "While linearities and translation invariance are certainly lost in log-polar images ... real-time active target tracking and time-to-impact estimation are possibly the tasks that log-polar imaging is clearly best suited to." No bit-rate numbers anywhere; compression appears only via the Weiman citation.
+- For round selfies: independent confirmation of the two mechanisms the video test found (oversampled centre = redundant pixels; sideways motion stops being a translation). The review's remedies (blind central disc, active camera keeping the target centred) are not available for a selfie circle.</p>
+<h3 id="weiman-1990-us-5103306-see-lens-1">Weiman 1990 / US 5,103,306 - see Lens 1</h3>
+<p>Same entry as above; for the still-image question the relevant point is that the 25:1 log-polar stage is foveation (fewer pixels toward the rim), so there is no equal-quality still-image result to build on.</p>
+<h3 id="berton-sandini-metta-2006-real-log-polar-silicon-fewer-pixels-a-seam-at-the-fovea-no-market">Berton, Sandini &amp; Metta 2006 - real log-polar silicon: fewer pixels, a seam at the fovea, no market</h3>
+<p><strong>F. Berton, G. Sandini, G. Metta, "Anthropomorphic Visual Sensors," Encyclopedia of Sensors (eds. Grimes, Dickey, Pishko), American Scientific Publishers, vol. 10, pp. 1-16, 2006 (some sources cite 2005).</strong> Related: G. Sandini, P. Questa, D. Scheffer, B. Dierickx, A. Mannucci, "A retina-like CMOS sensor and its applications," IEEE SAM 2000.
+Link: https://www.robotcub.org/misc/papers/05_Berton_Sandini_Metta.pdf
+<em>Verified:</em> full chapter read (Table 1).
+- What they did: three generations of Genoa/IMEC log-polar chips: CCD 2,022 px (30 rings x 64 + 102 foveal px; largest/smallest pixel ratio 13.7), CMOS 8k 8,013 px (76 x 128, fovea 845 px on 20 rings), CMOS 33k 33,193 px (152 x 252). The CCD fovea was a Cartesian patch, so "a major discontinuity was present on the border between the two regions"; later chips kept a polar fovea to soften it. "So far we are not aware of any commercial device, besides those described here, that have been realized based on log-polar retina like sensors."
+- For round selfies: shows what a polar layout buys when the pixel budget may shrink toward the rim (robot gaze). Our polar arms did the opposite (rim-Nyquist, 1.6x MORE pixels) to keep rim quality, hence +32 % from pixel budget alone. Also documents the r=0 singularity/fovea seam we hit.</p>
+<h3 id="isoiec-19794-62005-the-one-standardised-polar-still-image-format">ISO/IEC 19794-6:2005 - the one standardised polar still-image format</h3>
+<p><strong>ISO/IEC 19794-6:2005, "Biometric data interchange formats - Part 6: Iris image data" (first edition 2005-06-01; revised 2011).</strong>
+Link: https://cdn.standards.iteh.ai/samples/38750/5cd4485d9450469c8b3252e5b7174f88/ISO-IEC-19794-6-2005.pdf
+<em>Verified:</em> preview text read (clause 6.3.2).
+- What they did: defined a rectilinear format and a polar format. Polar conversion: samples "computed using bilinear interpolation applied to the four pixels closest to the calculated sample coordinates", "zero degree angular value shall be at the six o'clock position"; in the pupil-centre variant "the number of radial samples ... shall be not less than the iris radius in the rectilinear image ... and the number of angular samples shall be not less than one-half" the outer boundary length. Record sizes ~2 kB polar vs 25-30 kB rectilinear (per Matschitsch et al. 2007).
+- For round selfies: the standard gained size from cropping to the region of interest and halving angular sampling at the rim, not from polar geometry; and it prescribes bilinear interpolation, the same resampling loss we measured (~12 points). The 2011 revision dropped the polar formats (see IREX above).</p>
+<h3 id="daugman-downing-2008-the-inventor-of-iris-recognition-rejects-polar-images-as-an-interchange-format">Daugman &amp; Downing 2008 - the inventor of iris recognition rejects polar images as an interchange format</h3>
+<p><strong>J. Daugman, C. Downing, "Effect of severe image compression on iris recognition performance," IEEE TIFS 3(1):52-61, 2008; TR UCAM-CL-TR-685, 2007.</strong>
+Link: https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-685.pdf
+<em>Verified:</em> full report read.
+- What they did: 1,425 NIST ICE-1 eye images cropped to 320x320, iris isolated as ROI, JPEG and JPEG 2000 at severe levels, then the deployed IrisCode matcher. JPEG 2000 at 2,000 bytes ("net factor of 150") leaves only "2% to 3% of the bits in the IrisCode" changed; degradation appears at 1,700 bytes. On polar formats: "polar mappings depend strongly upon the choice of origin of coordinates ... a shift error in the choice of coordinate origin can cause large distortions in the mapped data, with no way to recover"; rectilinear "pixels retain constant size and spacing, rather than suffering the polar size distortions and shift sensitivity of unwrapping methods."
+- For round selfies: the strongest domain-expert argument against exactly our pipeline. His alternative (code the square, spend the budget on the disc via ROI) is the zero-warp baseline any polar still coder must beat. Our circle centre (W/2+2.5, user framing) is not exactly known, so origin sensitivity applies.</p>
+<h3 id="rakshit-monro-2007-polar-iris-strips-compress-well-because-the-consumer-is-a-matcher">Rakshit &amp; Monro 2007 - polar iris strips compress well because the consumer is a matcher</h3>
+<p><strong>S. Rakshit, D. M. Monro, "An evaluation of image sampling and compression for human iris recognition," IEEE TIFS 2(3):605-612, 2007.</strong>
+Link: https://ieeexplore.ieee.org/document/4291558/
+<em>Verified:</em> abstract via IEEE record and citing works.
+- What they did: 2,156 CASIA images mapped to 512 (angular) x 80 (radial) polar strips, sub-sampled via Fourier coefficients, JPEG 2000, three matchers. Negligible degradation if at least 171 x 16 Fourier coefficients are kept (equivalent to 342 x 32 samples); JPEG 2000 "improved matching performance ... down to 0.3 b/pixel", attributed to noise reduction.
+- For round selfies: a polar still can be tiny when the consumer is a texture matcher that likes smoothing. A human viewer of a selfie gets no such "useful denoising" (our inverse warp did not denoise), so this does not transfer.</p>
+<h3 id="uhl-group-2009-2012-polar-images-have-anisotropic-statistics-stock-codec-tuning-is-wrong-for-them">Uhl group 2009 / 2012 - polar images have anisotropic statistics; stock codec tuning is wrong for them</h3>
+<p><strong>G. S. Kostmajer, H. Stoegner, A. Uhl, "Custom JPEG Quantization for Improved Iris Recognition Accuracy," IFIP SEC 2009, IFIP AICT 297, pp. 76-86, doi:10.1007/978-3-642-01244-0_7.</strong>
+<strong>J. Haemmerle-Uhl, M. Karnutsch, A. Uhl, "Recognition Impact of JPEG2000 Part 2 wavelet packet subband structures in polar iris image compression," IWSSIP 2012, pp. 13-16.</strong>
+Links: https://www.cosy.sbg.ac.at/~uhl/02970076.pdf ; https://www.wavelab.at/bib/BIO_publ.html
+<em>Verified:</em> 2009 full text; 2012 slides (talk) read, paper record via WaveLab/IWSSIP programme.
+- What they did: 2009: DCT energy of 8x8 blocks from polar iris images shows "more energy in the higher frequencies in vertical direction" (radial); 16 custom quantisation tables tested at compression rates 5-40. With the default table the genuine-user Hamming distance stays ~0.305 up to rate 10 and crosses the 0.34 threshold between 30 and 40; "Q-tables 15 and 16 clearly improve on the results of STQ from compression rate 20 upwards". 2012: 512x64 polar strips (32,782 bytes raw, 409 bytes at 0.1 bpp); JPEG 2000 Part 2 wavelet packets help only for some matcher/bitrate combinations; "Optimal PSNR performance does not guarantee a good recognition performance."
+- For round selfies: concrete evidence that a polar canvas is a different statistical object: angular and radial frequencies are not symmetric, and default quant tables / psy models are tuned for natural images. A still-image test could measure this anisotropy on our circles directly, something the video test never isolated.</p>
+<h3 id="solar-orbiter-metis-the-one-flying-polar-re-ordering-compressor-is-a-lossless-permutation">Solar Orbiter Metis - the one flying polar re-ordering compressor is a lossless permutation</h3>
+<p><strong>E. Antonucci, M. Romoli, V. Andretta et al., "Metis: the Solar Orbiter visible light and ultraviolet coronal imager," Astronomy &amp; Astrophysics 642, A10, 2020, doi:10.1051/0004-6361/201935338 (Sect. 9.4); arXiv:1911.08462.</strong>
+<strong>M. Ricci, E. Magli, "On-board lossless compression of solar corona images," IEEE IGARSS 2015, doi:10.1109/IGARSS.2015.7326214.</strong>
+Links: https://arxiv.org/abs/1911.08462 ; https://ieeexplore.ieee.org/document/7326214
+<em>Verified:</em> A&amp;A full text (arXiv PDF, Sect. 9.4.3-9.4.5) read; Ricci &amp; Magli abstract via IEEE record.
+- What they did: extension of the CCSDS-123 predictive lossless coder with "image reordering through a radialisation process" that scans pixels by increasing radius so similar pixels are adjacent; the Cartesian-to-radialised mapping "only depends on the image size and not on the pixel values" and is "a one-to-one mapping", so lossless coding and per-pixel error bounds survive; rows of the radialised image are annuli, allowing region-of-interest quality (lossless inner corona) and per-ring binning; the Golomb coder was replaced by a range coder because "the Golomb encoder becomes suboptimal as the bit rate approaches 1 bit/pixel"; overall ratios "(e.g., 10:1)" with region-dependent quality.
+- For round selfies: if a polar still-image experiment is done, this is the design to copy: permutation (no resampling loss) + predictive coder, not bilinear remap + DCT. Its gain relies on ring-wise similarity of a radially symmetric scene; a face is not radially symmetric, and the approach has no motion story at all.</p>
+<h3 id="eichenseer-kaup-2014-see-lens-1">Eichenseer &amp; Kaup 2014 - see Lens 1</h3>
+<p>Same entry; relevant here because the intra gain (1.16 dB) of warping toward rectilinear exceeds the inter gain (0.95 dB), so a still-image test tends to overstate geometry effects relative to video.</p>
+<h3 id="360-degree-polar-caps-in-square-faces-pad-the-corners-never-warp-the-circle">360-degree polar caps in square faces: pad the corners, never warp the circle</h3>
+<p><strong>Y.-U. Yoon, Y.-J. Ahn, D. Sim, J.-G. Kim, "Efficient methods of inactive regions padding for Segmented Sphere Projection (SSP) of 360 video," IEICE Trans. Information and Systems E101.D(11), 2018, doi:10.1587/transinf.2018EDL8069.</strong> SSP itself: C. Zhang, Y. Lu, J. Li, Z. Wen, JVET-E0025, Jan. 2017.
+<strong>X. Xiu, Y. He, Y. Ye, "An adaptive quantization method for 360-degree video coding," Proc. SPIE 10752, 107520X, 2018, doi:10.1117/12.2321963.</strong>
+Links: https://www.jstage.jst.go.jp/article/transinf/E101.D/11/E101.D_2018EDL8069/_article ; https://doi.org/10.1117/12.2321963
+<em>Verified:</em> Yoon abstract ("0.3% BD-rate reduction over the existing padding method for SSP", WS-PSNR); Xiu abstract ("5.0% BD-rate saving for the equirectangular projection and 2.6% ... for the cubemap projection" vs fixed QP, JEM-6.0-360Lib). Note: JVET-F0038 "adaptive QP for 360 video" is a Technicolor contribution (Racape et al.), not this InterDigital work.
+- What they did: SSP maps the polar caps to circular faces inside square regions with grey inactive corners; Yoon et al. fill the corners from adjacent circle-boundary pixels. Xiu et al. adapt QP per region to the spherical sampling density instead of changing the projection.
+- For round selfies: independent measurement that the corner/edge cost of a circle in a square is small (fractions of a percent), consistent with our small "geometry prize" and with guard-row padding hurting. Their answer to oversampled regions was QP adaptation, the honest fix for a polar centre if anyone keeps a polar canvas.</p>
+<h3 id="jpeg-2000-maxshift-roi-the-still-image-baseline-for-disc-matters-corners-dont">JPEG 2000 Maxshift ROI - the still-image baseline for "disc matters, corners don't"</h3>
+<p><strong>C. Christopoulos, J. Askeloef, M. Larsson, "Efficient methods for encoding regions of interest in the upcoming JPEG2000 still image coding standard," IEEE Signal Processing Letters 7(9):247-249, 2000.</strong>
+<strong>J. Askeloef, M. Larsson Carlander, C. Christopoulos, "Region of interest coding in JPEG 2000," Signal Processing: Image Communication 17(1):105-111, 2002, doi:10.1016/S0923-5965(01)00026-1.</strong>
+Links: https://ieeexplore.ieee.org/document/863146/ ; https://www.sciencedirect.com/science/article/abs/pii/S0923596501000261
+<em>Verified:</em> both abstracts via IEEE record / dblp / ResearchGate.
+- What they did: the Maxshift method adopted in JPEG 2000 Part 1: ROI wavelet coefficients are scaled above all background coefficients so the decoder separates them by magnitude; arbitrary-shaped ROI with no shape information transmitted and "a small coding penalty"; background quality can be lowered by truncating the codestream.
+- For round selfies: defines the correct still-image baseline for a round picture: code the square, declare the disc the ROI, let the white corners be background at near-zero cost. Any polar still coder must beat this.</p>
+<h3 id="wang-bovik-2001-centre-weighted-still-coding-pays-only-at-extreme-rates">Wang &amp; Bovik 2001 - centre-weighted still coding pays only at extreme rates</h3>
+<p><strong>Z. Wang, A. C. Bovik, "Embedded foveation image coding," IEEE TIP 10(10):1397-1410, 2001.</strong>
+Link: https://live.ece.utexas.edu/publications/2001/zw_ieeeip2001_eifc.pdf
+<em>Verified:</em> full preprint read.
+- What they did: 9/7 wavelet coefficients weighted by a contrast-sensitivity model of eccentricity, modified SPIHT ordering (EFIC), foveated wavelet quality index (FWQI); Zelda, Board, News. At 0.015625 bpp (512:1) and 0.03125 bpp (256:1) EFIC keeps eyes/nose/mouth where SPIHT is blurred; at 0.25 bpp (32:1) the two "are almost indistinguishable".
+- For round selfies: a ~1 Mbps 400x400 30 fps circle is about 0.2 bpp per frame and the face fills the disc, so the regime where centre-weighting pays is far below where circles operate; and centre emphasis is achievable by weighting, without polar geometry.</p>
+<h3 id="jpeg-xl-saliency-ordering-centre-first-is-delivery-order-not-fewer-bytes">JPEG XL saliency ordering - "centre first" is delivery order, not fewer bytes</h3>
+<p><strong>M. Firsching, J. He (Google Research), "Using saliency in progressive JPEG XL images," Google Open Source Blog, 7 Sept 2021.</strong>
+Link: https://opensource.googleblog.com/2021/09/using-saliency-in-progressive-jpeg-xl-images.html
+<em>Verified:</em> page read.
+- What they did: libjxl orders square groups ("typically of size 256 x 256") by a learned saliency map so the most important groups arrive first, with boundary smoothing; an 8x8 downsampled (DC) image is always available first. Progressive JPEG needs "approximately 15% of the data" for a decent preview. The post makes no claim of a bitrate change from saliency ordering.
+- For round selfies: rules out "free centre emphasis" from JPEG XL progression; for a still-image polar experiment compare against JPEG XL / AVIF-still with per-region quantisation instead.</p>
+<h3 id="fong-20152024-the-family-of-disc-to-square-maps-and-their-distinct-properties">Fong 2015/2024 - the family of disc-to-square maps and their distinct properties</h3>
+<p><strong>C. Fong, "Analytical methods for squaring the disc," arXiv:1509.06344 (v1 2015, v5 Dec 2024; Seoul ICM 2014 talk).</strong>
+Link: https://arxiv.org/abs/1509.06344
+<em>Verified:</em> abstract.
+- What they did: closed-form disc&lt;-&gt;square mappings with "conformal, equiareal, and radially-constrained" properties, for logos, panoramas and hyperbolic art. Not a coding paper.
+- For round selfies: a still-image sweep of this family at intra-only is the cheapest way to ask "is it the area distortion or the shape distortion that costs bits"; our 1.37 (elliptical) vs 1.62 (Shirley-Chiu) gap already hints that shape matters more than equal area for a block-DCT coder.</p>
+<h3 id="varjo-2024-patent-industry-still-tries-log-polar-before-a-codec-with-a-geometric-fix-and-no-data">Varjo 2024 patent - industry still tries log-polar before a codec, with a geometric fix and no data</h3>
+<p><strong>M. Strandborg, V. Miettinen (Varjo Technologies Oy), "Encoders and decoders employing log-polar coordinate system," US 11,863,788 B2, filed 8 Apr 2022, granted 2 Jan 2024.</strong>
+Link: https://patents.google.com/patent/US11863788B2/en
+<em>Verified:</em> patent read.
+- What they did: log-polar transform where each ring "is rotated by half-a-texel" more than the previous, then "any (off-the-shelf) video codec or image codec algorithm", then inverse; claims "significantly improving compression efficiency in encoding without any perceivable loss in image quality" but reports no bitrate, PSNR or subjective data. The example uses 60/40/20 pixels-per-degree regions, i.e. a foveated (unequal quality) budget.
+- For round selfies: the same rim failure mode we measured (jagged content on the polar grid inflates high frequencies), fixed with a geometric trick and again only for a foveated use case. No verified evidence exists for the equal-quality case.</p>
+<h3 id="disc-native-transform-bases-mathematically-right-no-fast-transform-no-codec">Disc-native transform bases - mathematically right, no fast transform, no codec</h3>
+<p><strong>G. Papakostas, D. Karras, B. Mertzios, "Image coding using a wavelet based Zernike moments compression technique," IEEE DSP 2002, vol. 2, pp. 517-520.</strong>
+<strong>F. J. Simons, D. V. Wang, "Spatiospectral concentration in the Cartesian plane," GEM Int. J. Geomathematics 2(1):1-36, 2011; arXiv:1007.5226.</strong>
+<strong>M. Shaqfa, G. P. T. Choi, G. Anciaux, K. Beyer, "Disk harmonics for analysing curved and flat self-affine rough surfaces...," arXiv:2403.07001, 2024.</strong>
+Links: https://ieeexplore.ieee.org/document/1028141/ ; https://arxiv.org/abs/1007.5226 ; https://arxiv.org/abs/2403.07001
+<em>Verified:</em> all three abstracts.
+- What they did: Zernike-moment vectors compressed with a wavelet coder for retrieval-grade reconstruction; Slepian functions on a planar region (Fredholm eigenproblem, eigenvalues measure concentration, circular symmetry gives Sturm-Liouville structure); Fourier-Bessel disk harmonics for rough-surface analysis. None reports PSNR/bpp against JPEG.
+- For round selfies: if "polar maths" is read as "use a disc-native basis", the state of the art is an analysis tool with no codec built on it; a still test could at most measure energy compaction vs 8x8 DCT, and nothing an H.264/AV1 pipeline could carry.</p>
+<h3 id="ba-goyal-20062007-when-polar-coordinates-beat-linear-transform-coding-in-signal-space">Ba &amp; Goyal 2006/2007 - when polar coordinates beat linear transform coding (in signal space)</h3>
+<p><strong>D. E. Ba, V. K. Goyal, "Nonlinear transform coding: polar coordinates revisited," IEEE DCC 2006 (summary), doi:10.1109/DCC.2006.61.</strong> <strong>D. E. Ba, V. K. Goyal, "Integer polar coordinates for compression," IEEE ISIT 2007, pp. 1116-1120, doi:10.1109/ISIT.2007.4557373.</strong>
+Links: https://ieeexplore.ieee.org/document/1607281 ; https://ieeexplore.ieee.org/document/4557373
+<em>Verified:</em> both abstracts via IEEE/Semantic Scholar records.
+- What they did: high-rate analysis of "uniformly scalar quantize, convert to integer polar coordinates, entropy-code radius and angle separately". For sources separable in polar but not in Cartesian coordinates (certain Gaussian scale mixtures) "the proposed system performs better than any transform code"; "the advantage over the best linear transform coder can be large". This is polar coordinates of the source vector, not image geometry.
+- For round selfies: a clean framing for the slides: a polar representation pays only if the data's structure is genuinely polar (rings and spokes statistically independent). Selfie content is Cartesian-structured; the one synthetic clip where polar won (3 deg/frame spin) is exactly the polar-separable case.</p>
+<hr />
+<h2 id="lens-3-why-the-pipeline-is-rectangular-and-where-non-rectangular-thinking-actually-shipped">Lens 3. Why the pipeline is rectangular, and where non-rectangular thinking actually shipped</h2>
+<h3 id="bayer-1976-wikipedia-colour-capture-starts-on-a-square-grid">Bayer 1976 / Wikipedia - colour capture starts on a square grid</h3>
+<p><strong>B. E. Bayer, US patent 3,971,065 (1976); Wikipedia, "Bayer filter".</strong>
+Link: https://en.wikipedia.org/wiki/Bayer_filter
+<em>Verified:</em> Wikipedia lead read.
+- What it says: "A Bayer filter mosaic is a color filter array (CFA) for arranging RGB color filters on a square grid of photosensors", "half green, one quarter red and one quarter blue"; CMOS sensors read this grid row by row.
+- For round selfies: the pixels the phone hands you are already Cartesian and demosaiced on a square lattice; a polar representation is a second resampling on top and can only add error, never recover rim detail that was never sampled radially.</p>
+<h3 id="block-codecs-are-square-block-machines-h264-hevc-av1">Block codecs are square-block machines (H.264 / HEVC / AV1)</h3>
+<p><strong>J. Han et al., "A Technical Overview of AV1," Proc. IEEE 109(9):1435-1462, 2021; arXiv:2008.06091. Wikipedia: "Advanced Video Coding", "High Efficiency Video Coding", "AV1".</strong>
+Links: https://arxiv.org/abs/2008.06091 ; https://en.wikipedia.org/wiki/AV1
+<em>Verified:</em> Han abstract; Wikipedia sentences read.
+- What they say: H.264 "variable block-size motion compensation (VBSMC) with block sizes as large as 16x16 and as small as 4x4" (finalised May 2003); "HEVC replaces 16x16 pixel macroblocks ... with coding tree units (CTUs) which can use larger block structures of up to 64x64 samples"; AV1 "Superblocks are square-shaped and can either be of size 128x128 or 64x64 pixels"; AV1 "achieves more than 30% reduction in bit-rate compared to its predecessor VP9" and was designed "with considerations for hardware feasibility". Wikipedia also cites Netflix 2017 (AV1 "about 25% more efficient than VP9") and Facebook 2018 (34 %, 46.2 %, 50.3 % vs libvpx-vp9, x264 High, x264 Main).
+- For round selfies: a 384-px circle is 24x24 macroblocks or 3x3 AV1 superblocks; every tool (prediction, transforms, motion vectors, entropy contexts) assumes axis-aligned squares, so a polar canvas gets no help and its seam/rim lands on block edges as new content. Bigger AV1 blocks make flat white corners even cheaper in the square, so the gap is unlikely to close (pending batch3).</p>
+<h3 id="phone-hardware-encoders-roi-only-as-rectangles-block-qp-offsets-android-v4l2">Phone hardware encoders: ROI only as rectangles / block QP offsets (Android, V4L2)</h3>
+<p><strong>Android <code>MediaCodec.PARAMETER_KEY_QP_OFFSET_RECTS</code> / <code>_MAP</code> and NDK feature "Roi" (flagged API <code>android.media.codec.region_of_interest</code>); AOSP "OEM guidance for RoI implementation"; D. Guthyappa Madivalara (Qualcomm), "[RFC PATCH 1/3] media: uapi: Introduce new control for video encoder ROI," linux-media, Jan 2026 (reply by N. Dufresne quoting it).</strong>
+Links: https://source.android.com/docs/core/media/roi ; https://developer.android.com/ndk/reference/group/media ; https://lkml.iu.edu/2601.1/09318.html
+<em>Verified:</em> NDK and AOSP text via search; V4L2 thread read (the archived page is Dufresne's reply, which quotes the RFC).
+- What they say: NDK: the encoder "chooses a negative qp bias for the critical portions and a zero or positive qp bias for the non-critical portions ... the actual qp of the LCU will be 'qpFrame + qpBias'", and later frames are re-balanced to hit the bitrate target. V4L2 RFC: "struct v4l2_ctrl_enc_roi_params is defined to hold up to 10 v4l2_rect regions and their corresponding delta_qp with a range of -31 to 30", explicitly modelled on Android; the reviewer argues for a wider range and full QP maps as in D3D12/Vulkan Video. (The exact Android API level at which the keys are un-flagged could not be confirmed.)
+- For round selfies: the only "non-uniform" knob a phone encoder gives you is rectangular and block-granular. The practical way to exploit roundness on a device is a QP map (cheaper corners under the mask, optionally cheaper rim, dearer face), not a polar canvas that needs an inverse warp.</p>
+<h3 id="apple-videotoolbox-no-roi-qp-map-input-at-all">Apple VideoToolbox: no ROI / QP-map input at all</h3>
+<p><strong>Apple VideoToolbox headers: <code>kVTCompressionPropertyKey_SupportsBaseFrameQP</code> and <code>kVTEncodeFrameOptionKey_BaseFrameQP</code> (macOS 12 / iOS 15 / tvOS 15, read-only capability false by default); <code>kVTCompressionPropertyKey_SpatialAdaptiveQPLevel</code> (macOS 15.0 only, unavailable on iOS; values Default = -1, Disable = 0; "QP adaptation is based on spatial characteristics of a frame and the level of spatial QP adaptation is decided internally by the rate controller"; must be disabled with low-latency rate control).</strong>
+Links: https://developer.apple.com/documentation/videotoolbox/kvtcompressionpropertykey_spatialadaptiveqplevel ; header diffs https://github.com/dotnet/macios/wiki/VideoToolbox-macOS-xcode16.0-b1
+<em>Verified:</em> header text via SDK diffs and Apple forum thread; Apple doc page itself returned only a title.
+- What it says: only a frame-level base QP and an encoder-internal spatial AQ toggle exist; no property accepts user regions or a QP map; FFmpeg's videotoolbox wrapper exposes <code>spatial_aq</code> built on the same key.
+- For round selfies: on iPhone you cannot even do the rectangle trick. Any "fewer bits on corners/rim" idea has to be pre-processing (flatten masked corners, mild rim blur) that the rate controller notices. A polar canvas is doubly impractical there: full GPU remap per frame on both ends and nothing from the hardware.</p>
+<h3 id="software-encoders-per-macroblock-qp-offsets-are-a-first-class-api-x264-ffmpeg-addroi">Software encoders: per-macroblock QP offsets are a first-class API (x264, FFmpeg addroi)</h3>
+<p><strong>x264.h, <code>x264_image_properties_t.quant_offsets</code>; M. Thompson, "[PATCH v3 5/5] lavfi: addroi filter," FFmpeg, 3 June 2019.</strong>
+Links: https://patchwork.ffmpeg.org/project/ffmpeg/patch/20190603231905.9536-5-sw@jkqxz.net/ ; https://raw.githubusercontent.com/mirror/x264/master/x264.h
+<em>Verified:</em> both texts read.
+- What they say: x264: "an array of quantizer offsets to be applied to this image during encoding. These are added on top of the decisions made by x264. Offsets can be fractional; they are added before QPs are rounded to integer. Adaptive quantization must be enabled", "one offset per macroblock, in raster scan order". addroi: qoffset in "-1 to +1. A value of zero indicates no quality change"; in 10-bit H.264 (QP -12..51) a qoffset of -1/10 is "-1/10 * (51 - -12) = -6.3" QP better than the frame.
+- For round selfies: a one-line experiment on the same x264 already benchmarked: <code>ffmpeg -vf addroi=...</code> marking corners/rim with +qoffset and the face with -qoffset, at equal disc PSNR. It is the square-grid way to "pay less for the rim" without the 82-point polar tax.</p>
+<h3 id="round-smartwatches-render-into-a-square-frame-buffer">Round smartwatches render into a square frame buffer</h3>
+<p><strong>Google, "Capture Wear UI screens," Android Developers (Wear OS).</strong>
+Link: https://developer.android.com/training/wearables/get-started/screenshots
+<em>Verified:</em> page read.
+- What it says: "One specific consideration for Wear OS is that this command captures the raw, square frame buffer, which doesn't include a circular mask." Apps detect roundness (<code>isScreenRound()</code>, <code>-round</code> resources) and keep content inside the inscribed circle; the corners (1 - pi/4 = 21.5 % of the buffer) are rendered and discarded.
+- For round selfies: even the one consumer device that is physically round keeps the rectangular pipeline and throws away the corners. Telegram's circle (square file + UI mask + white corners) is the industry norm, and any polar format would be unpacked back to a square buffer on every playback device anyway.</p>
+<h3 id="apples-own-circular-display-patent-explains-why-panels-are-rectangular">Apple's own circular-display patent explains why panels are rectangular</h3>
+<p><strong>Apple Inc., "Electronic device having display with curved edges," US 9,965,995 B2, filed 7 Jan 2016, granted 8 May 2018.</strong>
+Link: https://patents.google.com/patent/US9965995B2/en
+<em>Verified:</em> patent background read.
+- What it says: "Pixel arrays often have rectangular shapes. However, rectangular pixel arrays will not fit efficiently within a device having a circular shape. Circular displays can have bottleneck regions in which signal lines become crowded, leading to inefficient use of display area."
+- For round selfies: rows and columns are how sensors and panels are wired (one gate line per row, one data line per column), not a software habit. Polar geometry is unnatural at both ends of the pipeline, so it can only live in the compressed middle and must pay two resamplings; it could only win with a large compression gain, which the measurements rule out.</p>
+<h3 id="log-polar-silicon-exists-and-did-not-catch-on-see-berton-sandini-metta-2006-lens-2">Log-polar silicon exists and did not catch on - see Berton, Sandini &amp; Metta 2006 (Lens 2)</h3>
+<p>Same entry. Lens-3 reading: the payoff is only when the periphery may be coarse (robot gaze), the centre singularity forces a separate fovea and a seam, and the market stayed rectangular. It also shows where polar does pay: rotation becomes a shift, matching the one synthetic case (3 deg/frame spin) where polar won.</p>
+<h3 id="daala-pvq-polar-that-shipped-in-a-codec-lives-in-coefficient-space">Daala PVQ - "polar" that shipped in a codec lives in coefficient space</h3>
+<p><strong>J.-M. Valin, T. B. Terriberry, "Perceptual Vector Quantization for Video Coding," Proc. SPIE 9410, Visual Information Processing and Communication VI, 941009, 2015, doi:10.1117/12.2080529; arXiv:1602.05209.</strong>
+Links: https://arxiv.org/abs/1602.05209 ; https://jmvalin.ca/daala/pvq_demo/
+<em>Verified:</em> abstract.
+- What they did: gain-shape vector quantisation from Opus/CELT applied to Daala: a block's AC coefficients coded as a length (gain) and a direction (shape); prediction coded as the angle between input and predictor via a Householder reflection, preserving energy (textures kept) with contrast masking for free. "Outperforms scalar quantization by an average of 0.90 dB on still images, equivalent to a 24.8% reduction in bitrate at equal quality, while for videos, the improvement averages 0.83 dB, equivalent to a 13.7% reduction in bitrate."
+- For round selfies: what a polar idea looks like when it works: the radius/angle split is applied to the vector of transform coefficients, where energy and pattern really are separable, and the block grid is untouched. The profitable place for polar maths is inside the quantiser or a perceptual loss, not in warping pixels.</p>
+<h3 id="vvc-geometric-partitioning-mode-a-heavily-engineered-non-rectangular-tool-is-worth-1">VVC Geometric Partitioning Mode - a heavily engineered non-rectangular tool is worth ~1 %</h3>
+<p><strong>H. Gao, S. Esenlik, E. Alshina, E. Steinbach, "Geometric Partitioning Mode in Versatile Video Coding: Algorithm Review and Analysis," IEEE TCSVT, 2021, doi:10.1109/TCSVT.2020.3040291.</strong>
+Link: https://portal.fis.tum.de/en/publications/geometric-partitioning-mode-in-versatile-video-coding-algorithm-r/
+<em>Verified:</em> abstract.
+- What they did: reviewed and measured GPM in VTM-8.0 under JVET CTC (block split by an angled line, each side uni-predicted, boundary blended): "luma Bjontegaard Delta rate reduction of 0.70% for random access and of 1.55% for low delay with B slices", "roughly 3% to 5% additional encoding time and negligible decoder runtime change".
+- For round selfies: even a heavily engineered departure from squares, at object edges inside the block grid, buys ~1 %. The disc/white boundary in a circle is one such edge; a smarter partition could save at most this order, far below the +37..+109 % cost of any global re-gridding measured here.</p>
+<h3 id="foveated-rendering-at-consumer-scale-quest-pro-26-52-gpu-on-a-rectangular-render-target">Foveated rendering at consumer scale (Quest Pro) - 26-52 % GPU, on a rectangular render target</h3>
+<p><strong>D. Heaney, "Here's The Exact Performance Benefit Of Foveated Rendering On Quest Pro," UploadVR, 13 Oct 2022 (reporting Meta's Connect 2022 numbers); Meta Horizon developer blog, "Save GPU with Eye Tracked Foveated Rendering," 2023.</strong>
+Links: https://www.uploadvr.com/quest-pro-foveated-rendering-performance/ ; https://developers.meta.com/horizon/blog/save-gpu-with-eye-tracked-foveated-rendering/
+<em>Verified:</em> both pages read/confirmed.
+- What they say: default resolution FFR 26-36 %, ETFR 33-45 % GPU saving; at 1.5x resolution FFR 34-43 %, ETFR 36-52 %; PSVR2 claims ~60 % / ~72 %; theoretical ~20x not reachable, first-gen eye-tracking latency "on the order of 50 milliseconds". Meta blog: Red Matter 2 used ETFR for "a 33% increase in pixel density - equivalent to 77% more pixels rendered in the optical center". Implemented as a GPU rasteriser feature on a rectangular render target.
+- For round selfies: foveation gets 30-50 % by rendering fewer pixels in a huge periphery (~100 deg FOV). A 384-px selfie circle has almost no periphery, so expect single-digit to low-double-digit percent at best, via QP/resolution hints, not coordinate changes.</p>
+<h3 id="gaze-steered-qp-in-ordinary-h264-up-to-63-at-jnd-but-only-with-live-gaze">Gaze-steered QP in ordinary H.264 - up to 63 % at JND, but only with live gaze</h3>
+<p><strong>O. Wiedemann, V. Hosu, H. Lin, D. Saupe, "Foveated Video Coding for Real-Time Streaming Applications," QoMEX 2020, doi:10.1109/QoMEX48832.2020.9123080.</strong> <strong>G. Illahi, M. Siekkinen, E. Masala, "Foveated Video Streaming for Cloud Gaming," IEEE MMSP 2017; arXiv:1706.04804.</strong>
+Links: https://kops.uni-konstanz.de/entities/publication/9cff8858-f7fe-40f0-9220-7c387f0670ba ; https://arxiv.org/abs/1706.04804
+<em>Verified:</em> both abstracts.
+- What they did: eye tracker feeds the H.264 encoder's spatial QP allocation in real time; "average bitrate savings of 63.24% at the JND in comparison to the unfoveated baseline" (Wiedemann). Illahi: foveated cloud-gaming streaming "can reduce bandwidth requirements by even more than 50% depending on parametrization".
+- For round selfies: upper bound for spatially non-uniform quality on a square grid, achieved only with live gaze and a large field of view. A stored circle has no gaze feedback and the salient region is ~the whole disc; a static face-ROI/rim-deprioritisation is the applicable subset, and the metric must be perceptual (JND), not disc PSNR, or the saving will look like a loss.</p>
+<h3 id="hsiao-et-al-2022-non-uniform-allocation-is-a-latency-problem-not-a-geometry-problem">Hsiao et al. 2022 - non-uniform allocation is a latency problem, not a geometry problem</h3>
+<p><strong>L. Hsiao, B. Krajancich, P. Levis, G. Wetzstein, K. Winstein, "Towards Retina-Quality VR Video Streaming: 15ms Could Save You 80% of Your Bandwidth," ACM SIGCOMM CCR 52(1):10-19, 2022; arXiv:2108.12720.</strong>
+Link: https://arxiv.org/abs/2108.12720
+<em>Verified:</em> abstract and CCR record.
+- What they did: client/server VR streaming with sub-15 ms motion-to-photon latency and gaze-contingent compression; "a client and streaming server system with sub-15ms latency can achieve 5x better compression than traditional techniques while also using simpler software algorithms".
+- For round selfies: a stored circle message has no feedback loop, so its achievable non-uniform gain is whatever a static prior (face centred, rim less important, corners invisible) can give. Frames "where do we profit from polar?" as "what do we know a priori about where the viewer looks?".</p>
+<h3 id="qualcomm-2005-patent-faceroi-bit-allocation-for-video-telephony-is-old-industry-practice">Qualcomm 2005 patent - face/ROI bit allocation for video telephony is old industry practice</h3>
+<p><strong>Qualcomm Inc., "Region-of-interest coding in video telephony using RHO domain bit allocation," US 8,768,084 B2, priority 1 Mar 2005, granted 1 Jul 2014.</strong> Related: libvpx <code>VP9E_SET_ROI_MAP</code> ("Extend Region of Interest functionality to VP9", libvpx 1.8.0, Jan 2019).
+Links: https://patents.google.com/patent/US8768084B2/en ; https://chromium.googlesource.com/webm/libvpx/+/v1.8.0
+<em>Verified:</em> patent abstract; libvpx changelog.
+- What it says: "adaptive skipping of a non-ROI area of a video frame to conserve encoding bits for allocation to the ROI", "allocation of bits to the ROI using weighted bit allocation models at the macroblock (MB) level within the rho domain", plus an ROI-weighted quality metric. No bitrate percentages. No public engineering documentation was found that Zoom / Meet / Teams apply face ROI in production.
+- For round selfies: the industry answer to "the face matters more than the background" is macroblock-level ROI on the square grid, decided by a face detector, not a change of coordinates. For circle messages: lower QP on the face, higher on the rim ring, maximum QP or skip on the masked corners, all H.264-compatible.</p>
+<h3 id="shirley-chiu-1997-the-concentric-map-was-designed-for-sampling-not-compression">Shirley &amp; Chiu 1997 - the concentric map was designed for sampling, not compression</h3>
+<p><strong>P. Shirley, K. Chiu, "A Low Distortion Map Between Disk and Square," Journal of Graphics Tools 2(3):45-52, 1997, doi:10.1080/10867651.1997.10487479.</strong>
+Links: https://www.tandfonline.com/doi/abs/10.1080/10867651.1997.10487479 ; code https://github.com/erich666/jgt-code (Volume_02/Number_3/Shirley1997)
+<em>Verified:</em> abstract via publisher/ACM record; public-domain code confirmed.
+- What they did: a map between squares and discs "that associates concentric squares with concentric circles ... preserves adjacency and fractional area", with branch-minimal robust code and a hemisphere extension. Area is preserved; angles are distorted most along the square's diagonals.
+- For round selfies: explains why the Shirley-Chiu variant (1.62x) sat between elliptical (1.37x) and polar (1.8-2.1x): it keeps neighbourhoods but bends straight lines along the diagonals, and its corners map onto the rim where the loss concentrates. A motion-compensated block codec punishes shear most, which is why the near-affine elliptical stretch lost the least.</p>
+<hr />
+<h2 id="bottom-line-across-all-three-lenses">Bottom line across all three lenses</h2>
+<ol>
+<li>No paper codes a circular video in polar coordinates with a standard codec and reports an equal-quality bitrate win. Every "polar compresses" number in the literature (Weiman 25:1, Sandini sensors, Wang-Bovik, Varjo) comes from foveation, i.e. from giving the rim less quality.</li>
+<li>Where geometry-aware ideas did pay (fisheye ~1 dB, 360-degree rotation ~11 %, AV1/VVC affine 1-6 %), they were put into the motion model or the quantiser and the pixel grid was left alone; the only large gains needed a projection far more warped than a selfie crop.</li>
+<li>The cheapest experiments that keep the square grid and are backed by prior art: (a) x264 <code>addroi</code> / AV1 delta-q with the disc as ROI; (b) an intra-only (still-image) split of the 82-point penalty; (c) a Fourier-Mellin rotation/zoom estimator as a front-end, if the polar idea is to be kept alive at all.</li>
+</ol>
+<footer>polar-codec experiment &middot; 2026-09-06 &middot; <a href="../index.html">overview</a></footer>
+</div></body></html>

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Can polar coordinates make round videos smaller?</title>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body><div class="wrap">
+<header class="top">
+<h1>Can polar coordinates make round videos smaller?</h1><p class="sub">What we measured on real Telegram circles, and what the literature says.</p></header>
+<div class="lead">
+<p>A Telegram video circle is an ordinary <b>square</b> video file with a round mask drawn on top,
+so the codec already spends bytes on corners nobody sees. We asked whether a codec would do better
+if it saw the disc as a disc: we unrolled it into a <b>polar strip</b> (angle along one axis, radius
+along the other), compressed that strip with a standard, unmodified video codec, and rolled it back.</p>
+<p>On 30 real clips the plain square file was smaller <b>every single time</b>. At the same picture
+quality the polar version needed about <b>1.8&times;</b> the bytes, and even the gentlest disc-to-square
+map cost about <b>1.4&times;</b>. The loss is mostly in <b>motion prediction</b>, not in the resampling:
+a head that turns or nods becomes a warp in the strip that the codec cannot track with its usual
+"shift the block" moves.</p>
+<p>The one place polar maths could still help is as a <b>motion model</b> for rotation and zoom, and
+AV1 already provides such a model on the plain square. Whether that closes the gap is the last open
+question: <b>result pending</b>.</p>
+</div>
+
+<div class="cards">
+<a class="card" href="slides/index.html"><h3>Slide deck</h3><p>22 slides in plain language, with the demo circles and the unrolled strip playing in the browser. Arrow keys or click to move.</p></a>
+<a class="card" href="slides/polar-codec.pptx"><h3>PowerPoint</h3><p>The same deck as a 16:9 PPTX (4.2 MB) with still frames instead of videos.</p></a>
+<a class="card" href="research/index.html"><h3>Literature review</h3><p>What others tried: polar and log-polar video, disc-native still images, and why the whole pipeline is rectangular. Every source checked.</p></a>
+<a class="card" href="results/index.html"><h3>Results tables</h3><p>Bytes at equal quality for every variant and every clip, with confidence intervals, controls, timings and the AV1 comparison.</p></a>
+<div class="card note" id="private"><h3>Code, raw results and galleries</h3><p>The encoder/decoder code, the raw benchmark output (CSV/JSON), the per-clip plots, the best/worst galleries and the synthetic-motion report live in a private repository, together with the personal source clips. Only re-encoded derivatives are published here.</p></div>
+</div>
+
+<footer>polar-codec experiment &middot; 2026-09-06</footer>
+</div></body></html>

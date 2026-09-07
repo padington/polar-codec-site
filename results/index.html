@@ -23,7 +23,7 @@ The <b>AV1</b> section repeats the comparison under a newer codec (SVT-AV1, and 
 rotation and zoom tools switched on and off): the same arms, the same clips, each codec against its own square.
 The last section, <b>Shapes</b>, asks whether some other way of re-shaping the disc does better than the polar
 strip — six canvases on 12 clips under both codecs — and measures how much the white corners and the disc's
-edge are worth at all.</p>
+edge are worth at all; it opens with two contact sheets showing what every canvas actually looks like.</p>
 </div>
 <nav class="toc"><h2>Contents</h2><ul>
 <li><a href="#summary-bd-rate-vs-square-percent-negative-is-better">Summary: BD-rate vs square (percent, negative is better)</a><ul>
@@ -73,6 +73,7 @@ edge are worth at all.</p>
 </ul>
 </li>
 <li><a href="#shapes">Shapes</a><ul>
+<li><a href="#what-the-shapes-look-like">What the shapes look like</a></li>
 <li><a href="#1-in-plain-words">1. In plain words</a></li>
 <li><a href="#2-every-shape-side-by-side">2. Every shape side by side</a></li>
 <li><a href="#3-the-corner-cost-ceiling-how-much-is-there-to-win-at-all">3. The corner-cost ceiling: how much is there to win at all?</a></li>
@@ -51464,6 +51465,17 @@ a half and all the way, a squircular map, the only angle-preserving (conformal) 
 with a bit-exact centre tile. It also measures the <em>ceiling</em> — how much the white corners and the
 disc's edge are worth in the first place. Positive = more bits than the plain square at equal
 quality inside the disc.</p>
+<h3 id="what-the-shapes-look-like">What the shapes look like</h3>
+<p>Before the numbers, the pictures. The first sheet draws the same <strong>synthetic test disc</strong> — 12 spokes,
+6 rings, a 20-px checkerboard, a bold "TOP" at the top, an arrow at the chin and a red dot at the exact
+centre — on all nine canvases, so it is obvious where each map stretches, where it squeezes, and where
+its seams and singular points are. The second sheet does the same with a <strong>real frame</strong> and adds the
+transform-only round trip (forward + inverse, no codec) behind the round mask and its amplified error.
+Every panel is captioned with the canvas size, the pixel count relative to the square, the share of the
+white corner area it removes and the measured BD-rate against the square. The three tall canvases
+(<code>hybrid_center</code>, <code>polar_eq</code>, <code>polar_strip</code>) are drawn rotated 90&nbsp;degrees so they fit the page.</p>
+<p><img alt="The synthetic test disc drawn on all nine canvases" src="media/shapes_grid.png" /></p>
+<p><img alt="A real frame on all nine canvases, with the round trip and its error" src="media/shapes_real.png" /></p>
 <p>Corpus: the first 12 files of <code>results/batch2/files.txt</code>, 6 at 384 px and 6 at 400 px, 10 s each (<code>results/batch4_shapes/files.txt</code>). x264 objective ladder, 6 crfs, in <code>results/batch4_shapes</code>; SVT-AV1, 6 crfs, in <code>results/batch4_shapes_svtav1</code>. Quality is PSNR-Y inside the content disc; BD-rate is bits at equal disc quality, so <strong>positive = the shape costs more bits than the plain square</strong>.</p>
 <h3 id="1-in-plain-words">1. In plain words</h3>
 <p>A Telegram round video is really a square file with a circle drawn on it, and the four corners are flat white. The idea being tested is: cut the circle open and stretch it so it fills the whole square, and you should get the corners' worth of pixels for free. Seven canvases were tried — four of them new in this pass — and <strong>not one of them beats the plain square, on any of the 12 clips, under either encoder.</strong></p>

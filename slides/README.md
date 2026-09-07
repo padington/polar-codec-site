@@ -1,6 +1,6 @@
 # Slides: "Can polar coordinates make round videos smaller?"
 
-Two copies of the same 22-slide deck, written for a smart non-specialist.
+Two copies of the same 23-slide deck, written for a smart non-specialist.
 
 | file | what it is |
 |---|---|
@@ -36,17 +36,18 @@ original clip, see Notes); the moving versions are in the HTML deck.
 9. Why it loses #1: rim starved, centre flooded (-3.0 dB rim vs -0.6 dB centre)
 10. Why it loses #2: motion becomes a warp; white corners are already almost free
 11. What we tried to rescue it (guard rows, seam at the chin, equal-area bands, gentler maps)
-12. Synthetic motion tests: only a fast spin wins
-13. Where rotation and zoom already pay: AV1 / VVC motion tools, literature numbers
-14. AV1 result: the gap narrows, the verdict holds (35 words, one table: real clips 1.82x -> 1.76x and 1.37x -> 1.19x, fast spin -14 % -> -34 %, libaom warps off / on -32 % / -21 %, square +20 % without them; one-line takeaway)
-15. What others tried: polar in video, 1 of 2 (3 sources, one line each)
-16. What others tried: polar in video, 2 of 2 (3 sources + "none beat the square" badge)
-17. What others tried: polar for still images, 1 of 2 (3 sources)
-18. What others tried: polar for still images, 2 of 2 (3 sources + badge)
-19. Should we build a polar still-image coder first? (verdict)
-20. Three ways to use polar maths from here + recommendation
-21. Appendix: the numbers (table generated from `results/batch2/summary.json`)
-22. Appendix: method and links
+12. Other ways to unroll the disc (shape sweep: 6 canvases x 12 clips x 2 codecs, one table, the corner-cost ceiling, one-line takeaway)
+13. Synthetic motion tests: only a fast spin wins
+14. Where rotation and zoom already pay: AV1 / VVC motion tools, literature numbers
+15. AV1 result: the gap narrows, the verdict holds (35 words, one table: real clips 1.82x -> 1.76x and 1.37x -> 1.19x, fast spin -14 % -> -34 %, libaom warps off / on -32 % / -21 %, square +20 % without them; one-line takeaway)
+16. What others tried: polar in video, 1 of 2 (3 sources, one line each)
+17. What others tried: polar in video, 2 of 2 (3 sources + "none beat the square" badge)
+18. What others tried: polar for still images, 1 of 2 (3 sources)
+19. What others tried: polar for still images, 2 of 2 (3 sources + badge)
+20. Should we build a polar still-image coder first? (verdict)
+21. Three ways to use polar maths from here + recommendation
+22. Appendix: the numbers (table generated from `results/batch2/summary.json`)
+23. Appendix: method and links
 
 ## Rebuilding
 
@@ -56,7 +57,9 @@ original clip, see Notes); the moving versions are in the HTML deck.
 
 Needs the project venv (numpy, cv2, python-pptx), `ffmpeg` and `rsvg-convert` on PATH.
 The script asserts the headline numbers against `results/batch2/summary.json`,
-`results/batch2/synth/synth_report.md` and, for slide 14, `results/batch2_svtav1/av1_gap.json`
+`results/batch2/synth/synth_report.md`, for slide 12 `results/batch4_shapes/summary.json`
++ `results/batch4_shapes_svtav1/summary.json` (and the ceiling phrases in
+`results/batch4_shapes/shapes_report.md`), and, for slide 15, `results/batch2_svtav1/av1_gap.json`
 (written by `python -m polarcodec av1-gap`), so a changed benchmark fails the build
 instead of silently shipping stale slides. Existing files in `media/` are reused;
 delete one to regenerate it.
@@ -74,13 +77,20 @@ delete one to regenerate it.
   crf-24 median (~0.5 Mbit/s = 494 kbps), which the slide now states. `README.md` and
   `docs/explainer.md` now use the same anchor (1.9 / 2.5 / 3.4 MB: 494 kbps x 30 s / 8 =
   1.85 MB, x 1.82 = 3.37 MB, rounded; the deck truncates to 1.8 / 3.3).
-- Slide 14 (formerly the "AV1 result: pending" placeholder) is filled from
+- Slide 15 (formerly the "AV1 result: pending" placeholder) is filled from
   `results/batch2_svtav1/av1_gap.json`: the `av1` entry in `build.py`'s `SLIDES` list
   reads the medians (polar_eq / ellip_full under svtav1, rot3 under both codecs, the
   libaom warps-on / warps-off BD-rates) and the build asserts them against the numbers
   quoted in the README. The square's "+20 %" is the BD-rate of square-with-warps-off vs
   square-with-warps-on, i.e. the square needs 20 % *more* bytes without the warps
-  (about 16 % fewer with them), never "20 % fewer with them". Slide 20's second card
+  (about 16 % fewer with them), never "20 % fewer with them". Slide 21's second card
   and slide 5's codec box no longer say the AV1 test is pending.
 - Guard rows read 1.92x in the deck (median +92.46 %); the README's rounded "+92.5 %"
   gives 1.93x if rounded twice.
+- Slide 12 (the shape sweep) is built from the two `batch4_shapes` summaries: the six canvas
+  rows are `SHAPE_ROWS` in `build.py` and every percentage is the median BD-rate `psnr_disc`
+  read from `summary.json`, asserted against the numbers quoted in `README.md` and in
+  `results/batch4_shapes/shapes_report.md`. `hybrid_center` was never run under SVT-AV1, so its
+  AV1 cell reads "not run". The slide reuses the `av1` slide kind (table + one-line takeaway)
+  with two extra fields: `ceiling` (the muted line under the table) and `col_w` / `orange_cols`
+  for the PPTX table.

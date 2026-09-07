@@ -6,7 +6,7 @@
 </head>
 <body><div class="wrap wide">
 <header class="top"><a class="back" href="../index.html">&larr; Back to the overview</a>
-<h1>polarcodec benchmark report</h1><p class="sub">30 real Telegram circles, 14 arms under x264 and three under AV1, six quality settings each. Bytes at equal disc quality relative to the plain square.</p></header>
+<h1>polarcodec benchmark report</h1><p class="sub">30 real Telegram circles, 14 arms under x264 and three under AV1, six quality settings each, plus a sweep of seven canvas shapes on 12 of them. Bytes at equal disc quality relative to the plain square.</p></header>
 <div class="intro">
 <p><b>How to read these tables.</b> Every row is one way of feeding a round video to the codec (an "arm");
 <code>square</code> is the plain square file that Telegram already uses, so it is the baseline at 0.
@@ -19,8 +19,11 @@ and <code>wins</code> counts the clips on which that arm was the cheapest. Polar
 <code>square_post_</code>, <code>square_warp_</code> and <code>square_up_</code> rows are controls that
 isolate the cost of resampling and of the extra pixels. Below the summary come the same-bitrate check,
 timings, aggregate rate-distortion curves, transform-only floors, and one section per clip.
-The last section, <b>AV1</b>, repeats the comparison under a newer codec (SVT-AV1, and libaom with its
-rotation and zoom tools switched on and off): the same arms, the same clips, each codec against its own square.</p>
+The <b>AV1</b> section repeats the comparison under a newer codec (SVT-AV1, and libaom with its
+rotation and zoom tools switched on and off): the same arms, the same clips, each codec against its own square.
+The last section, <b>Shapes</b>, asks whether some other way of re-shaping the disc does better than the polar
+strip — six canvases on 12 clips under both codecs — and measures how much the white corners and the disc's
+edge are worth at all.</p>
 </div>
 <nav class="toc"><h2>Contents</h2><ul>
 <li><a href="#summary-bd-rate-vs-square-percent-negative-is-better">Summary: BD-rate vs square (percent, negative is better)</a><ul>
@@ -67,6 +70,15 @@ rotation and zoom tools switched on and off): the same arms, the same clips, eac
 </li>
 <li><a href="#av1">AV1</a><ul>
 <li><a href="#av1-gap-x264-vs-av1-on-the-same-harness">AV1 gap: x264 vs AV1 on the same harness</a></li>
+</ul>
+</li>
+<li><a href="#shapes">Shapes</a><ul>
+<li><a href="#1-in-plain-words">1. In plain words</a></li>
+<li><a href="#2-every-shape-side-by-side">2. Every shape side by side</a></li>
+<li><a href="#3-the-corner-cost-ceiling-how-much-is-there-to-win-at-all">3. The corner-cost ceiling: how much is there to win at all?</a></li>
+<li><a href="#4-would-choosing-the-shape-per-clip-help">4. Would choosing the shape per clip help?</a></li>
+<li><a href="#5-observations">5. Observations</a></li>
+<li><a href="#round-views">Round views</a></li>
 </ul>
 </li>
 </ul></nav><ul>
@@ -51444,5 +51456,372 @@ square at equal quality.</p>
 </tr>
 </tbody>
 </table>
+<h2 id="shapes">Shapes</h2>
+<p>Is the loss a property of the <em>polar</em> map, or of re-shaping the disc at all? A separate sweep
+(<code>results/batch4_shapes</code> under x264, <code>results/batch4_shapes_svtav1</code> under SVT-AV1) benched seven
+canvases and four corner controls on 12 of the clips, 10 s each: elliptical maps inflated a quarter,
+a half and all the way, a squircular map, the only angle-preserving (conformal) map, and a hybrid
+with a bit-exact centre tile. It also measures the <em>ceiling</em> — how much the white corners and the
+disc's edge are worth in the first place. Positive = more bits than the plain square at equal
+quality inside the disc.</p>
+<p>Corpus: the first 12 files of <code>results/batch2/files.txt</code>, 6 at 384 px and 6 at 400 px, 10 s each (<code>results/batch4_shapes/files.txt</code>). x264 objective ladder, 6 crfs, in <code>results/batch4_shapes</code>; SVT-AV1, 6 crfs, in <code>results/batch4_shapes_svtav1</code>. Quality is PSNR-Y inside the content disc; BD-rate is bits at equal disc quality, so <strong>positive = the shape costs more bits than the plain square</strong>.</p>
+<h3 id="1-in-plain-words">1. In plain words</h3>
+<p>A Telegram round video is really a square file with a circle drawn on it, and the four corners are flat white. The idea being tested is: cut the circle open and stretch it so it fills the whole square, and you should get the corners' worth of pixels for free. Seven canvases were tried — four of them new in this pass — and <strong>not one of them beats the plain square, on any of the 12 clips, under either encoder.</strong></p>
+<p>The best shape found so far is <code>ellip_p50</code>, which only inflates the circle into a rounded square covering 85 % of the frame instead of stretching it all the way out. It costs <strong>+21.5 % more bits with x264</strong> and <strong>+9.0 % more with SVT-AV1</strong> at the same picture quality. That is a real improvement over the previous best (<code>ellip_full</code>, +35 % / +17 %), and it points in a very clear direction: the <em>less</em> you warp, the better it does — and the limit of "less warp" is the square itself, at 0 %.</p>
+<p>The reason is not that the shapes are badly built. Their transform-only floors (round trip with no encoder at all) are 45–51 dB, i.e. essentially invisible; a control that does the conformal warp and un-warp with <em>no codec in between</em> and then encodes a plain square costs only +7.5 %. So the resampling is cheap. What is expensive is that once the picture is warped, a face moving across the frame stops being a simple sideways shift, and block-based motion compensation — the thing that makes video compression work — has to spend bits to describe it.</p>
+<p>The other half of the question is how much there is to win at all. Three separate measurements agree that it is very little. Replacing the real corners of a clip with perfectly flat white changes its bitrate by <strong>−0.3 to +2.5 %</strong> — the corners are already free. A clip containing the corner region and the circle's edge <em>and nothing else</em> costs only <strong>1.9 % (crf 32) to 8.5 % (crf 16)</strong> of the full bitrate. And the one arm that actually deletes the circle's edge — an impossible "oracle" that also throws away 6–18 dB of quality at the rim — saves <strong>0.8–2.0 %</strong>.</p>
+<p>So the ceiling any re-shaped canvas is competing for is a <strong>low single-digit percentage</strong>, and the cheapest shape overshoots it by a factor of ten. Two arms that put smooth or grey content in the corners instead of white made the files <strong>bigger</strong> (+4.0 % and +6.4 %) — flat white corners are the cheapest thing you can put there.</p>
+<p>Finally: picking the shape per clip does not help. Across all four runs (12 files x 2 codecs here, plus the 30-file <code>batch2</code> pair), the square is the per-file winner on <strong>every single file</strong> — 84 out of 84 file-codec pairs. Even a perfect oracle that got to look at each clip's answer before choosing would save <strong>0.0 %</strong>.</p>
+<h3 id="2-every-shape-side-by-side">2. Every shape side by side</h3>
+<p><code>white canvas %</code> is the share of canvas pixels that carry nothing (the white corners); <code>corners removed %</code> is how much of the square's own white area the shape gets rid of. <code>floor</code> is the transform-only round trip with <strong>no codec at all</strong> — the best any encode of that canvas could ever reach (median over the 12 clips). <code>dB at square's bitrate</code> is PSNR-Y in the disc when the arm is given exactly the bits <code>square</code> uses at crf 24 (negative = worse picture for the same bytes).</p>
+<table>
+<thead>
+<tr>
+<th>shape</th>
+<th>canvas W=384 / W=400</th>
+<th style="text-align: right;">canvas px vs source</th>
+<th style="text-align: right;">white canvas %</th>
+<th style="text-align: right;">corners removed %</th>
+<th>floor disc / inner / rim (dB)</th>
+<th style="text-align: right;">BD-rate x264 % [95 % CI]</th>
+<th style="text-align: right;">BD-rate SVT-AV1 % [95 % CI]</th>
+<th style="text-align: right;">dB at square's bitrate, x264</th>
+<th style="text-align: right;">dB at square's bitrate, SVT-AV1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>square</code></td>
+<td>384x384 / 400x400</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">19.7</td>
+<td style="text-align: right;">0</td>
+<td>lossless (identity)</td>
+<td style="text-align: right;">+0.0 [+0.0, +0.0]</td>
+<td style="text-align: right;">+0.0 [+0.0, +0.0]</td>
+<td style="text-align: right;">+0.00</td>
+<td style="text-align: right;">+0.00</td>
+</tr>
+<tr>
+<td><code>ellip_p50</code></td>
+<td>388x388 / 404x404</td>
+<td style="text-align: right;">1.02</td>
+<td style="text-align: right;">14.8</td>
+<td style="text-align: right;">25</td>
+<td>50.8 / 53.4 / 48.8</td>
+<td style="text-align: right;"><strong>+21.5</strong> [+17.4, +27.2]</td>
+<td style="text-align: right;"><strong>+9.0</strong> [+7.0, +12.3]</td>
+<td style="text-align: right;">-1.19</td>
+<td style="text-align: right;">-0.36</td>
+</tr>
+<tr>
+<td><code>ellip_p75</code></td>
+<td>388x388 / 404x404</td>
+<td style="text-align: right;">1.02</td>
+<td style="text-align: right;">9.8</td>
+<td style="text-align: right;">50</td>
+<td>51.4 / 53.5 / 49.6</td>
+<td style="text-align: right;">+24.0 [+18.3, +31.1]</td>
+<td style="text-align: right;">+9.6 [+8.2, +13.7]</td>
+<td style="text-align: right;">-1.24</td>
+<td style="text-align: right;">-0.35</td>
+</tr>
+<tr>
+<td><code>ellip_full</code></td>
+<td>388x388 / 404x404</td>
+<td style="text-align: right;">1.02</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">100</td>
+<td>50.7 / 53.7 / 48.6</td>
+<td style="text-align: right;">+35.0 [+28.7, +46.3]</td>
+<td style="text-align: right;">+17.3 [+15.0, +24.6]</td>
+<td style="text-align: right;">-1.69</td>
+<td style="text-align: right;">-0.62</td>
+</tr>
+<tr>
+<td><code>fgsq_full</code></td>
+<td>388x388 / 404x404</td>
+<td style="text-align: right;">1.02</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">100</td>
+<td>51.0 / 54.6 / 49.0</td>
+<td style="text-align: right;">+36.3 [+26.4, +42.8]</td>
+<td style="text-align: right;">+17.3 [+13.3, +21.9]</td>
+<td style="text-align: right;">-1.72</td>
+<td style="text-align: right;">-0.55</td>
+</tr>
+<tr>
+<td><code>conformal_full</code></td>
+<td>388x388 / 404x404</td>
+<td style="text-align: right;">1.02</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">100</td>
+<td>44.8 / 54.1 / 41.9</td>
+<td style="text-align: right;">+53.5 [+41.0, +58.0]</td>
+<td style="text-align: right;">+35.2 [+27.7, +49.5]</td>
+<td style="text-align: right;">-2.24</td>
+<td style="text-align: right;">-1.15</td>
+</tr>
+<tr>
+<td><code>hybrid_center</code></td>
+<td>274x580 / 286x606</td>
+<td style="text-align: right;">1.08</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">100</td>
+<td>48.5 / <strong>62.0</strong> / 45.3</td>
+<td style="text-align: right;">+79.8 [+67.2, +89.6]</td>
+<td style="text-align: right;">not run</td>
+<td style="text-align: right;">-2.92</td>
+<td style="text-align: right;">not run</td>
+</tr>
+<tr>
+<td><code>square_warp_conformal_full</code></td>
+<td>384x384 / 400x400 (square)</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">19.7</td>
+<td style="text-align: right;">0</td>
+<td>44.8 / 54.1 / 41.9</td>
+<td style="text-align: right;">+7.5 [+5.7, +13.8]</td>
+<td style="text-align: right;">not run</td>
+<td style="text-align: right;">-0.46</td>
+<td style="text-align: right;">not run</td>
+</tr>
+</tbody>
+</table>
+<p>Same-bitrate reference points differ per codec: x264 reads each arm at that clip's <code>square</code> crf-24 bitrate, SVT-AV1 at its <code>square</code> crf-34 bitrate.</p>
+<ul>
+<li><code>square</code> — identity: the frame as it is shot, flat white corners. The baseline.</li>
+<li><code>ellip_p50</code> — half-way between square and elliptical: the disc is inflated into a squircle covering 85 % of the canvas, the remaining 14.8 % stays white. <strong>Best canvas measured, on 10 of 12 files under x264 and 9 of 12 under SVT-AV1.</strong></li>
+<li><code>ellip_p75</code> — three quarters of the way (90 % of the canvas). Best on the other 2–3 files.</li>
+<li><code>ellip_full</code> — elliptical grid map, disc stretched to fill the whole square. The previous best.</li>
+<li><code>fgsq_full</code> — Fong FG-squircular map (squircle level sets instead of ellipses). Statistically indistinguishable from <code>ellip_full</code> here despite having the best transform floor of any canvas (51.0 dB).</li>
+<li><code>conformal_full</code> — Schwarz-Christoffel conformal map, the only angle-preserving canvas: a rigid motion of the subject stays a similarity instead of becoming a position-dependent shear. <strong>The better motion model does not pay.</strong> It is the worst of the square canvases, and the loss is in <code>psnr_rim</code> (41.9 vs 48.6–49.0): the four magnified corner singularities are paid for by a ~1.28x minification of the rim on the axes.</li>
+<li><code>hybrid_center</code> — Cartesian centre tile (a bit-exact pixel copy) + polar rim annulus cut into 4 theta chunks packed below it. Has by far the best <em>inner</em> floor (62.0 dB, because the tile is not resampled at all) and by far the worst BD-rate. The packing costs 8 % more pixels and 4 extra theta seams, and the rim is an ordinary polar rim.</li>
+<li><code>square_warp_conformal_full</code> — control, not a canvas: conformal warp + un-warp with <strong>no codec in between</strong>, then a plain square encode. It charges only the <em>resampling</em> loss of the conformal map to a square encode. +7.5 % against <code>conformal_full</code>'s +53.5 % — so roughly a seventh of that canvas's loss is resampling and the rest is the warped canvas itself.</li>
+</ul>
+<h3 id="3-the-corner-cost-ceiling-how-much-is-there-to-win-at-all">3. The corner-cost ceiling: how much is there to win at all?</h3>
+<p>Re-shaping the disc can only ever win back what the square layout wastes: the flat white corners, plus the sharp white/content edge between them and the picture. Four independent measurements bound that.</p>
+<p><strong>(a) Does the corner region cost anything in a square encode?</strong> Encode each clip three times through the same pinned x264 ladder: as it is (<code>full</code>), with everything <em>outside</em> <code>r_map</code> replaced by flat TV-white (<code>disc alone</code>), and with everything <em>inside</em> <code>r_map</code> replaced by flat TV-white (<code>corners alone</code>); plus a completely flat frame as an overhead baseline. 4 clips x 10 s:</p>
+<table>
+<thead>
+<tr>
+<th>clip</th>
+<th style="text-align: right;">crf</th>
+<th style="text-align: right;">full kbps</th>
+<th style="text-align: right;">disc alone kbps</th>
+<th style="text-align: right;">disc/full</th>
+<th style="text-align: right;">corners alone, above a flat frame</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>382675</td>
+<td style="text-align: right;">16 / 24 / 32</td>
+<td style="text-align: right;">909 / 348 / 144</td>
+<td style="text-align: right;">910 / 349 / 145</td>
+<td style="text-align: right;">100.2 / 100.3 / 100.4 %</td>
+<td style="text-align: right;">8.2 / 4.4 / 1.2 %</td>
+</tr>
+<tr>
+<td>443451</td>
+<td style="text-align: right;">16 / 24 / 32</td>
+<td style="text-align: right;">1445 / 583 / 221</td>
+<td style="text-align: right;">1482 / 591 / 223</td>
+<td style="text-align: right;">102.5 / 101.3 / 100.8 %</td>
+<td style="text-align: right;">10.7 / 6.0 / 1.9 %</td>
+</tr>
+<tr>
+<td>508366</td>
+<td style="text-align: right;">16 / 24 / 32</td>
+<td style="text-align: right;">859 / 249 / 90</td>
+<td style="text-align: right;">862 / 250 / 89</td>
+<td style="text-align: right;">100.3 / 100.5 / 99.7 %</td>
+<td style="text-align: right;">6.1 / 3.0 / 3.0 %</td>
+</tr>
+<tr>
+<td>583996</td>
+<td style="text-align: right;">16 / 24 / 32</td>
+<td style="text-align: right;">1100 / 469 / 189</td>
+<td style="text-align: right;">1100 / 470 / 190</td>
+<td style="text-align: right;">100.0 / 100.1 / 100.4 %</td>
+<td style="text-align: right;">9.0 / 3.5 / 1.6 %</td>
+</tr>
+<tr>
+<td><strong>mean</strong></td>
+<td style="text-align: right;">16 / 24 / 32</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"><strong>100.7 / 100.6 / 100.4 %</strong></td>
+<td style="text-align: right;"><strong>8.5 / 4.2 / 1.9 %</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Replacing the real corners with mathematically flat white does <strong>not</strong> make the file smaller — it makes it very slightly larger. And a clip that contains the corner region and the disc boundary <em>and nothing else</em> costs 1.9–8.5 % of the full bitrate, most of which is the boundary, not the corners. Any canvas that deletes the corner region is competing for approximately zero.</p>
+<p><strong>(b) Is something other than white cheaper in the corners?</strong> No — it is more expensive. Bitrate against <code>square</code> at the same crf (mean over the 12 clips; negative = smaller file):</p>
+<table>
+<thead>
+<tr>
+<th>arm</th>
+<th style="text-align: right;">crf 16</th>
+<th style="text-align: right;">crf 20</th>
+<th style="text-align: right;">crf 24</th>
+<th style="text-align: right;">crf 28</th>
+<th style="text-align: right;">crf 32</th>
+<th style="text-align: right;">crf 36</th>
+<th style="text-align: right;">mean</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>square_softfill</code></td>
+<td style="text-align: right;">+5.9 %</td>
+<td style="text-align: right;">+5.2 %</td>
+<td style="text-align: right;">+4.7 %</td>
+<td style="text-align: right;">+4.2 %</td>
+<td style="text-align: right;">+3.4 %</td>
+<td style="text-align: right;">+2.4 %</td>
+<td style="text-align: right;">+4.3 %</td>
+</tr>
+<tr>
+<td><code>square_greyfill</code></td>
+<td style="text-align: right;">+6.1 %</td>
+<td style="text-align: right;">+5.9 %</td>
+<td style="text-align: right;">+5.7 %</td>
+<td style="text-align: right;">+5.1 %</td>
+<td style="text-align: right;">+4.2 %</td>
+<td style="text-align: right;">+2.3 %</td>
+<td style="text-align: right;">+4.9 %</td>
+</tr>
+<tr>
+<td><code>square_feather_oracle</code></td>
+<td style="text-align: right;">-0.8 %</td>
+<td style="text-align: right;">-1.6 %</td>
+<td style="text-align: right;">-2.0 %</td>
+<td style="text-align: right;">-2.0 %</td>
+<td style="text-align: right;">-1.7 %</td>
+<td style="text-align: right;">-1.4 %</td>
+<td style="text-align: right;">-1.6 %</td>
+</tr>
+</tbody>
+</table>
+<p>Quality at the same crf (mean PSNR-Y in the disc, dB above/below <code>square</code>) — the two fair arms leave the measured picture alone, the oracle destroys it:</p>
+<table>
+<thead>
+<tr>
+<th>arm</th>
+<th style="text-align: right;">crf 16</th>
+<th style="text-align: right;">crf 20</th>
+<th style="text-align: right;">crf 24</th>
+<th style="text-align: right;">crf 28</th>
+<th style="text-align: right;">crf 32</th>
+<th style="text-align: right;">crf 36</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>square_softfill</code></td>
+<td style="text-align: right;">-0.01</td>
+<td style="text-align: right;">-0.02</td>
+<td style="text-align: right;">-0.02</td>
+<td style="text-align: right;">-0.02</td>
+<td style="text-align: right;">+0.00</td>
+<td style="text-align: right;">+0.02</td>
+</tr>
+<tr>
+<td><code>square_greyfill</code></td>
+<td style="text-align: right;">-0.05</td>
+<td style="text-align: right;">-0.07</td>
+<td style="text-align: right;">-0.08</td>
+<td style="text-align: right;">-0.07</td>
+<td style="text-align: right;">-0.05</td>
+<td style="text-align: right;">-0.03</td>
+</tr>
+<tr>
+<td><code>square_feather_oracle</code></td>
+<td style="text-align: right;">-18.31</td>
+<td style="text-align: right;">-15.65</td>
+<td style="text-align: right;">-12.88</td>
+<td style="text-align: right;">-10.31</td>
+<td style="text-align: right;">-8.10</td>
+<td style="text-align: right;">-6.26</td>
+</tr>
+</tbody>
+</table>
+<p>BD-rate vs <code>square</code> (bits at equal disc quality, over the whole ladder):</p>
+<table>
+<thead>
+<tr>
+<th>arm</th>
+<th style="text-align: right;">x264 BD-rate % [95 % CI]</th>
+<th style="text-align: right;">SVT-AV1 BD-rate % [95 % CI]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>square_softfill</code></td>
+<td style="text-align: right;">+4.0 [+2.8, +6.1]</td>
+<td style="text-align: right;">+2.0 [+0.9, +4.1]</td>
+</tr>
+<tr>
+<td><code>square_greyfill</code></td>
+<td style="text-align: right;">+6.4 [+5.5, +6.9]</td>
+<td style="text-align: right;">not run</td>
+</tr>
+<tr>
+<td><code>square_feather_oracle</code></td>
+<td style="text-align: right;">no BD fit*</td>
+<td style="text-align: right;">no BD fit*</td>
+</tr>
+</tbody>
+</table>
+<p><code>softfill</code> continues the disc's own rim colour into the corners (smoothed along the angle, everything inside <code>r_map</code> bit-exact), so it has <em>no step at all</em> to code and still costs +4.0 %. <code>greyfill</code> flat-fills with one colour and costs +6.4 %. Flat white corners are all-skip blocks; anything else is real low-frequency content the encoder has to pay for.</p>
+<p><strong>(c) What is the edge worth?</strong> <code>square_feather_oracle</code> is the only arm that removes the source's own white/content transition, because on real footage that transition lies <em>inside</em> <code>r_map</code> (the Y profile of <code>382675_video.mp4</code> runs 133 at r = 190, 198 at 193, 236 at 194 = <code>r_map</code>, 254 at 195). It is not an achievable arm — it fades the disc's outer 6 px to white and therefore changes the content the metrics score, which is why it loses 6–18 dB and gets no BD-rate fit (*its <code>psnr_disc</code> range no longer overlaps <code>square</code>'s). At the same crf it saves <strong>0.8–2.0 %</strong>. That is the most any edge trick could ever buy.</p>
+<p><strong>Ceiling, put together: the corner region is worth ~0 %, the disc edge is worth at most ~2 %, and everything outside the disc together is worth at most 1.9–8.5 %.</strong> The cheapest canvas measured costs +21.5 % (x264) / +9.0 % (SVT-AV1). Nothing that only re-shapes the canvas can close that gap.</p>
+<h3 id="4-would-choosing-the-shape-per-clip-help">4. Would choosing the shape per clip help?</h3>
+<p><code>python -m polarcodec adaptive</code> is an offline pass: from finished bench dirs it computes each arm's per-file BD-rate, picks the winner <strong>per file</strong>, and aggregates. It is an <em>oracle ceiling</em> — the arm is chosen after seeing that file's answer, from the same measurements, so per-file noise is counted as a gain and the result cannot be worse than <code>square</code> by construction.</p>
+<ul>
+<li><strong>batch4_shapes</strong> (x264, 12 files, 11 arms): per-file oracle best-choice BD-rate median <strong>+0.0 %</strong> [+0.0, +0.0]; a non-<code>square</code> arm wins on <strong>0 of 12</strong> files. Best single arm: <code>square</code>.</li>
+<li><strong>batch4_shapes_svtav1</strong> (svtav1, 12 files, 8 arms): median <strong>+0.0 %</strong> [+0.0, +0.0]; <strong>0 of 12</strong>. Best single arm: <code>square</code>.</li>
+<li><strong>batch2</strong> (x264, 30 files, 14 arms): median <strong>+0.0 %</strong> [+0.0, +0.0]; <strong>0 of 30</strong>. Best single arm: <code>square</code>.</li>
+<li><strong>batch2_svtav1</strong> (svtav1, 30 files, 3 arms): median <strong>+0.0 %</strong> [+0.0, +0.0]; <strong>0 of 30</strong>. Best single arm: <code>square</code>.</li>
+</ul>
+<p>84 file-codec pairs, 84 square wins. The closest any non-square arm ever comes is <code>square_softfill</code> at <strong>+0.5 %</strong> on <code>452774_video.mp4</code> under SVT-AV1 — and it is still a loss. Adaptivity has nothing to select: there is no clip in the corpus for which some other canvas is even a tie.</p>
+<p>Written reports: <code>results/batch4_shapes/adaptive.md</code> (both new runs), <code>results/batch4_shapes_svtav1/adaptive.md</code>, <code>results/batch2/adaptive.md</code> (both 30-file runs).</p>
+<h3 id="5-observations">5. Observations</h3>
+<ol>
+<li>
+<p><strong><code>ellip_p50</code> is the new best canvas and it is the <em>least</em> warped one.</strong> Ordering the square-canvas maps by how much of the white corner area they remove — 0 % (<code>square</code>), 25 % (<code>ellip_p50</code>), 50 % (<code>ellip_p75</code>), 100 % (<code>ellip_full</code> / <code>fgsq_full</code>) — reproduces the BD-rate ordering exactly, under both codecs: 0.0 &lt; +21.5 &lt; +24.0 &lt; +35.0/+36.3 (x264) and 0.0 &lt; +9.0 &lt; +9.6 &lt; +17.3 (SVT-AV1). The trend extrapolates to its own minimum at "no warp at all". This is the strongest single piece of evidence in the pass: the family has been swept continuously and the optimum is at the endpoint that is already shipping.</p>
+</li>
+<li>
+<p><strong>The loss is the warp, not the resampling.</strong> Every canvas round-trips at 45–51 dB with no codec — far above any encode. <code>square_warp_conformal_full</code>, which pays the conformal map's full resampling loss and then encodes a plain square, costs +7.5 %, while <code>conformal_full</code> costs +53.5 %. So ~86 % of the conformal canvas's penalty comes from the canvas being warped during encoding, not from pixels lost in the transform.</p>
+</li>
+<li>
+<p><strong>Angle preservation does not buy motion compensation anything.</strong> <code>conformal_full</code> is the only canvas whose Jacobian is a scaled rotation everywhere, which was the specific hypothesis for why warped canvases lose (a rigid motion stays a similarity). It is the <em>worst</em> square canvas under both codecs (+53.5 % / +35.2 %). The reason is visible in the floor: it buys angle preservation by magnifying four rim points into the canvas corners and paying with a ~1.28x minification of the rim on the axes, so its <code>psnr_rim</code> floor is 41.9 against <code>fgsq_full</code>'s 49.0 while <code>psnr_inner</code> is identical (54.1 vs 54.6). A better local motion model cannot pay for a worse sampling budget.</p>
+</li>
+<li>
+<p><strong>A perfect centre does not save a canvas.</strong> <code>hybrid_center</code> copies the inscribed square of the disc bit-exactly — its inner floor is 62.0 dB, 8 dB better than any other map — and is still the worst arm measured (+79.8 %). The 4 theta seams, the 8 % extra pixels and the polar rim cost more than the perfect centre wins. Local fidelity in the transform is not what decides a canvas.</p>
+</li>
+<li>
+<p><strong>AV1 halves the penalty of every shape but changes no ordering.</strong> <code>ellip_full</code> +35.0 % (x264) → +17.3 % (SVT-AV1), <code>ellip_p50</code> +21.5 % → +9.0 %, <code>conformal_full</code> +53.5 % → +35.2 %, <code>softfill</code> +4.0 % → +2.0 %. SVT-AV1's larger and non-square transform blocks and better prediction absorb roughly half of the warp cost — consistent with the earlier 30-file result (1.37x → 1.19x bytes for <code>ellip_full</code>). But <code>square</code> still wins 12/12, and a shape would need the trend to reverse, not just shrink, to ever win.</p>
+</li>
+<li>
+<p><strong>The corners are already free, and "smoother" corners are worse.</strong> Whitening the real corners changes the bitrate by −0.3 to +2.5 %; putting the rim's own colour there instead of white costs +4.0 %; putting one flat non-white colour there costs +6.4 %. Flat white corners are the cheapest possible corner content, so "wasted pixels" is the wrong way to read the square layout — those pixels are wasted <em>area</em>, not wasted <em>bits</em>.</p>
+</li>
+<li>
+<p><strong>The ceiling is single-digit percent and the arms overshoot it tenfold.</strong> Corner region ~0 %, disc edge ≤2 % (oracle, at the cost of 6–18 dB), whole outside-the-disc region 1.9–8.5 %. Best canvas +21.5 % / +9.0 %. Even under SVT-AV1, where the gap is narrowest, the best shape costs more than the entire theoretical prize.</p>
+</li>
+<li>
+<p><strong>Per-clip switching is dead, not just weak.</strong> 84 file-codec pairs across four runs, 84 square wins, oracle ceiling exactly 0.0 % in every one. Not a single clip in the 30-file corpus prefers another canvas even by noise, so there is no content signal an adaptive encoder could learn from.</p>
+</li>
+</ol>
+<p><strong>Still open.</strong> Per-macroblock bit accounting for MBs entirely outside <code>r_map</code> in a square encode would replace the (a) proxies with a direct number; x264 does not expose it without instrumentation. <code>hybrid_center</code> and <code>square_greyfill</code> were not run under SVT-AV1 (they were already decided under x264). <code>ellip_p25</code> — a quarter of the way — was not measured; the trend says it would land between 0 and +21.5 %, still a loss, but it would pin the shape of the curve near the endpoint.</p>
+<h3 id="round-views">Round views</h3>
+<p><code>results/batch4_shapes/gallery_ellip_p50/round.html</code> — the best new shape on 2 clips (best and worst by BD-rate), 6 s each: the original, the plain square re-encoded to the same bitrate, and <code>ellip_p50</code> decoded back to a square, all three through the circular mask, with the canvas the codec actually compressed underneath.</p>
+<ul>
+<li>best: <code>508366_video.mp4</code>, BD-rate +11.8 %</li>
+<li>worst: <code>452773_video.mp4</code>, BD-rate +36.6 %</li>
+</ul>
+<hr />
+<p>Generated from <code>results/batch4_shapes/summary.json</code> and <code>results/batch4_shapes_svtav1/summary.json</code>; full tables in each run's <code>report.md</code> / <code>index.html</code>. Section 3(a) is <code>corner_bits.py</code> (scratch, x264 objective ladder, 4 clips x 10 s).</p>
 <footer>polar-codec experiment &middot; 2026-09-07 &middot; <a href="../index.html">overview</a></footer>
 </div></body></html>

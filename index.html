@@ -18,17 +18,21 @@ map cost about <b>1.4&times;</b>. The loss is mostly in <b>motion prediction</b>
 a head that turns or nods becomes a warp in the strip that the codec cannot track with its usual
 "shift the block" moves.</p>
 <p>The one place polar maths could still help is as a <b>motion model</b> for rotation and zoom, and
-AV1 already provides such a model on the plain square. Whether that closes the gap is the last open
-question: <b>result pending</b>.</p>
+AV1 already provides such a model on the plain square. So we re-ran the same clips under AV1: the
+square's lead shrinks a little (polar <b>1.76&times;</b> instead of 1.82&times;, the gentlest map 1.19&times;
+instead of 1.37&times;), and polar's only win, a fast spin, survives AV1's own rotation tools
+(&minus;34 % under SVT-AV1; &minus;21 % with libaom's warps on against &minus;32 % with them off).
+AV1 closes part of the gap on the square, but at fast spin polar still wins and at realistic motion it
+still loses. <b>Verdict unchanged: drop the polar file format.</b></p>
 </div>
 
 <div class="cards">
 <a class="card" href="slides/index.html"><h3>Slide deck</h3><p>22 slides in plain language, with the demo circles and the unrolled strip playing in the browser. Arrow keys or click to move.</p></a>
-<a class="card" href="slides/polar-codec.pptx"><h3>PowerPoint</h3><p>The same deck as a 16:9 PPTX (4.2 MB) with still frames instead of videos.</p></a>
+<a class="card" href="slides/polar-codec.pptx"><h3>PowerPoint</h3><p>The same deck as a 16:9 PPTX (4.3 MB) with still frames instead of videos.</p></a>
 <a class="card" href="research/index.html"><h3>Literature review</h3><p>What others tried: polar and log-polar video, disc-native still images, and why the whole pipeline is rectangular. Every source checked.</p></a>
 <a class="card" href="results/index.html"><h3>Results tables</h3><p>Bytes at equal quality for every variant and every clip, with confidence intervals, controls, timings and the AV1 comparison.</p></a>
 <div class="card note" id="private"><h3>Code, raw results and galleries</h3><p>The encoder/decoder code, the raw benchmark output (CSV/JSON), the per-clip plots, the best/worst galleries and the synthetic-motion report live in a private repository, together with the personal source clips. Only re-encoded derivatives are published here.</p></div>
 </div>
 
-<footer>polar-codec experiment &middot; 2026-09-06</footer>
+<footer>polar-codec experiment &middot; 2026-09-07</footer>
 </div></body></html>

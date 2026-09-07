@@ -38,7 +38,7 @@ original clip, see Notes); the moving versions are in the HTML deck.
 11. What we tried to rescue it (guard rows, seam at the chin, equal-area bands, gentler maps)
 12. Synthetic motion tests: only a fast spin wins
 13. Where rotation and zoom already pay: AV1 / VVC motion tools, literature numbers
-14. **AV1 result: pending** (placeholder, to be filled from `results/batch3_av1`)
+14. AV1 result: the gap narrows, the verdict holds (35 words, one table: real clips 1.82x -> 1.76x and 1.37x -> 1.19x, fast spin -14 % -> -34 %, libaom warps off / on -32 % / -21 %, square +20 % without them; one-line takeaway)
 15. What others tried: polar in video, 1 of 2 (3 sources, one line each)
 16. What others tried: polar in video, 2 of 2 (3 sources + "none beat the square" badge)
 17. What others tried: polar for still images, 1 of 2 (3 sources)
@@ -55,8 +55,9 @@ original clip, see Notes); the moving versions are in the HTML deck.
 ```
 
 Needs the project venv (numpy, cv2, python-pptx), `ffmpeg` and `rsvg-convert` on PATH.
-The script asserts the headline numbers against `results/batch2/summary.json`
-and `results/batch2/synth/synth_report.md`, so a changed benchmark fails the build
+The script asserts the headline numbers against `results/batch2/summary.json`,
+`results/batch2/synth/synth_report.md` and, for slide 14, `results/batch2_svtav1/av1_gap.json`
+(written by `python -m polarcodec av1-gap`), so a changed benchmark fails the build
 instead of silently shipping stale slides. Existing files in `media/` are reused;
 delete one to regenerate it.
 
@@ -70,11 +71,16 @@ delete one to regenerate it.
   `<video>` `onerror` handler swaps in the same label. All other media are re-encoded
   derivatives of decoded outputs.
 - The 30-s worked example on slide 6 (1.8 / 2.5 / 3.3 MB) is anchored on the square
-  crf-24 median (~0.5 Mbit/s), which the slide now states. `README.md` and
-  `docs/explainer.md` use 1.0 / 1.4 / 1.8 MB for the same ratios (a different base);
-  those files belong to the other workflow and should be aligned to one anchor.
-- Slide 14 is a deliberate placeholder for the AV1 batch. Fill it by replacing the
-  dashed box in `index.html` (`id="av1-placeholder"`) and the `placeholder` entry in
-  `build.py`'s `SLIDES` list.
+  crf-24 median (~0.5 Mbit/s = 494 kbps), which the slide now states. `README.md` and
+  `docs/explainer.md` now use the same anchor (1.9 / 2.5 / 3.4 MB: 494 kbps x 30 s / 8 =
+  1.85 MB, x 1.82 = 3.37 MB, rounded; the deck truncates to 1.8 / 3.3).
+- Slide 14 (formerly the "AV1 result: pending" placeholder) is filled from
+  `results/batch2_svtav1/av1_gap.json`: the `av1` entry in `build.py`'s `SLIDES` list
+  reads the medians (polar_eq / ellip_full under svtav1, rot3 under both codecs, the
+  libaom warps-on / warps-off BD-rates) and the build asserts them against the numbers
+  quoted in the README. The square's "+20 %" is the BD-rate of square-with-warps-off vs
+  square-with-warps-on, i.e. the square needs 20 % *more* bytes without the warps
+  (about 16 % fewer with them), never "20 % fewer with them". Slide 20's second card
+  and slide 5's codec box no longer say the AV1 test is pending.
 - Guard rows read 1.92x in the deck (median +92.46 %); the README's rounded "+92.5 %"
   gives 1.93x if rounded twice.

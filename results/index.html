@@ -6,7 +6,7 @@
 </head>
 <body><div class="wrap wide">
 <header class="top"><a class="back" href="../index.html">&larr; Back to the overview</a>
-<h1>polarcodec benchmark report</h1><p class="sub">30 real Telegram circles, x264, 14 arms, six quality settings each. Bytes at equal disc quality relative to the plain square.</p></header>
+<h1>polarcodec benchmark report</h1><p class="sub">30 real Telegram circles, 14 arms under x264 and three under AV1, six quality settings each. Bytes at equal disc quality relative to the plain square.</p></header>
 <div class="intro">
 <p><b>How to read these tables.</b> Every row is one way of feeding a round video to the codec (an "arm");
 <code>square</code> is the plain square file that Telegram already uses, so it is the baseline at 0.
@@ -18,7 +18,9 @@ and <code>wins</code> counts the clips on which that arm was the cheapest. Polar
 <code>polar_</code>; <code>ellip_</code> and <code>sc_</code> are disc-to-square maps; the
 <code>square_post_</code>, <code>square_warp_</code> and <code>square_up_</code> rows are controls that
 isolate the cost of resampling and of the extra pixels. Below the summary come the same-bitrate check,
-timings, aggregate rate-distortion curves, transform-only floors, and one section per clip.</p>
+timings, aggregate rate-distortion curves, transform-only floors, and one section per clip.
+The last section, <b>AV1</b>, repeats the comparison under a newer codec (SVT-AV1, and libaom with its
+rotation and zoom tools switched on and off): the same arms, the same clips, each codec against its own square.</p>
 </div>
 <nav class="toc"><h2>Contents</h2><ul>
 <li><a href="#summary-bd-rate-vs-square-percent-negative-is-better">Summary: BD-rate vs square (percent, negative is better)</a><ul>
@@ -63,10 +65,8 @@ timings, aggregate rate-distortion curves, transform-only floors, and one sectio
 <li><a href="#613559_videomp4-w400-r_content2025">613559_video.mp4 (W=400, r_content=202.5)</a></li>
 </ul>
 </li>
-<li><a href="#av1-gap-x264-vs-av1-on-the-same-harness">AV1 gap: x264 vs AV1 on the same harness</a><ul>
-<li><a href="#arms-real-footage">Arms, real footage</a></li>
-<li><a href="#synthetic-motion-kinds">Synthetic motion kinds</a></li>
-<li><a href="#libaom-ablation-global-warped-motion-on-vs-off-synthetic-clips-crf-40-40-at-the-middle">libaom ablation: global + warped motion on vs off (synthetic clips, crf 40 / 40 at the middle)</a></li>
+<li><a href="#av1">AV1</a><ul>
+<li><a href="#av1-gap-x264-vs-av1-on-the-same-harness">AV1 gap: x264 vs AV1 on the same harness</a></li>
 </ul>
 </li>
 </ul></nav><ul>
@@ -1906,7 +1906,7 @@ timings, aggregate rate-distortion curves, transform-only floors, and one sectio
 <th style="text-align: right;">forward</th>
 <th style="text-align: right;">x264 encode</th>
 <th style="text-align: right;">total encode</th>
-<th style="text-align: right;">ffmpeg decode</th>
+<th style="text-align: right;">ffmpeg H.264 decode</th>
 <th style="text-align: right;">inverse</th>
 <th style="text-align: right;">total decode</th>
 <th style="text-align: right;">cells</th>
@@ -2072,12 +2072,12 @@ timings, aggregate rate-distortion curves, transform-only floors, and one sectio
 <p>How they were measured (<code>time.perf_counter</code>, per cell, then divided by the frame count):</p>
 <ul>
 <li><strong>forward</strong>: sum over frames of the arm's <code>to_canvas</code> call in the encoding process (the map's forward remap with Lanczos-4 — two remaps plus a box filter when <code>aa</code> is on — or, for the controls, the pre-processing: warp round trip for <code>square_warp_*</code>, Lanczos upscale for <code>square_up_*</code>, a copy for <code>square_post_*</code>).</li>
-<li><strong>x264 encode</strong>: wall time of the writer from the ffmpeg process start until the muxed mp4 is closed, <em>including</em> the rgb24 pipe into ffmpeg and its rgb-&gt;yuv420p conversion. The canvas frames are staged to a raw file before x264 starts, so no transform time is inside this number (x264 <code>-threads 2</code>, <code>-preset medium</code>).</li>
-<li><strong>ffmpeg decode</strong>: wall time of one ffmpeg process decoding the canvas mp4 to an rgb24 raw file (demux + H.264 decode + yuv420p-&gt;rgb24 with the pinned sws flags + file write).</li>
+<li><strong>x264 encode</strong>: wall time of the writer from the encoder process start until the canvas file is closed, <em>including</em> the rgb24 pipe and the rgb-&gt;yuv420p conversion. The canvas frames are staged to a raw file before the encoder starts, so no transform time is inside this number (x264 <code>-threads 2</code>, <code>-preset medium</code>).</li>
+<li><strong>ffmpeg H.264 decode</strong>: wall time of one ffmpeg process decoding the canvas file to an rgb24 raw file (demux + H.264 decode + yuv420p-&gt;rgb24 with the pinned sws flags + file write).</li>
 <li><strong>inverse</strong>: sum over frames of <code>from_canvas</code> (inverse remap + edge ramp; for the controls the post-processing).</li>
-<li>total encode = forward + x264 encode; total decode = ffmpeg decode + inverse.</li>
+<li>total encode = forward + x264 encode; total decode = ffmpeg H.264 decode + inverse.</li>
 </ul>
-<p>The cells run inside the bench's worker pool (5 workers on this machine, each with 2 x264 threads plus the Python transform), so absolute numbers depend on the load; compare arms against <code>square</code> within the same run. Per-process ffmpeg start-up (~50 ms) is inside the encode and decode legs.</p>
+<p>The cells run inside the bench's worker pool (5 workers on this machine, each with 2 encoder threads plus the Python transform), so absolute numbers depend on the load; compare arms against <code>square</code> within the same run. Per-process ffmpeg start-up (~50 ms) is inside the encode and decode legs.</p>
 <h2 id="aggregate-rd-per-crf-means-across-files">Aggregate RD (per-crf means across files)</h2>
 <p><img alt="rd_all" src="rd_all.png" /></p>
 <table>
@@ -51187,14 +51187,21 @@ timings, aggregate rate-distortion curves, transform-only floors, and one sectio
 </tr>
 </tbody>
 </table>
-<h2 id="av1-gap-x264-vs-av1-on-the-same-harness">AV1 gap: x264 vs AV1 on the same harness</h2>
-<p><strong>on real footage polar_eq costs +82 % under x264 and +76 % under svtav1; on 3 deg/frame rotation polar_eq goes from -14 % (x264) to -34 % (svtav1); libaom's global + warped motion move polar_eq's rotation BD-rate from -32 % (warps off) to -21 % (warps on), the plain square itself needing 20 % fewer bytes with the warps on — AV1's warps do not remove the polar rotation advantage.</strong></p>
+<h2 id="av1">AV1</h2>
+<p>The same harness under AV1 instead of x264: <code>results/batch2_svtav1</code> is the 30-clip run with SVT-AV1
+(preset 6, PSNR tuning, three arms: <code>square</code>, <code>polar_eq</code>, <code>ellip_full</code>), its <code>synth/</code> the synthetic
+motions under SVT-AV1, and <code>results/aom_ablation</code> the synthetic clips with libaom's global + warped motion
+on vs off. Every BD-rate below is against <em>that codec's own</em> <code>square</code>, so the x264 column repeats the table
+above and the AV1 column answers "does a newer codec change the verdict?". Negative = fewer bytes than the
+square at equal quality.</p>
+<h3 id="av1-gap-x264-vs-av1-on-the-same-harness">AV1 gap: x264 vs AV1 on the same harness</h3>
+<p><strong>On real footage the polar canvas (polar_eq) needs 82 % more bytes than the plain square under x264 and 76 % more bytes under svtav1 (BD-rate +82 % / +76 %; negative would mean polar is cheaper). On fast rotation (3 deg/frame, the one motion a polar canvas turns into a plain shift) polar_eq needs 14 % fewer bytes under x264 and 34 % fewer bytes under svtav1 (BD-rate -14 % -&gt; -34 %). Switching libaom's global + warped motion tools on and off shows what they do: the plain square needs 20 % more bytes on rotation with the warps off (about 16 % fewer with them), and the polar advantage on rotation goes from 32 % fewer bytes (warps off) to 21 % fewer bytes (warps on) — reduced by about a third. AV1's warps do not remove the polar rotation advantage; rotation is still the only motion where the polar canvas pays.</strong></p>
 <p>BD-rate vs <code>square</code> (percent, negative = fewer bytes at equal quality, <code>psnr_disc</code>), median over files with the bootstrap 95 % CI of the median. Each column is one bench run with its own pinned encoder; the arms are the same.
 - <code>x264</code>: <code>&lt;private repo&gt;/results/batch2</code>, 30 files, crfs [16, 20, 24, 28, 32, 36], encoder <code>-c:v libx264 -pix_fmt yuv420p -tune psnr -x264-params aq-mode=0:psy-rd=0:mbtree=0:scenecut=0:keyint=300:bf=3:b-adapt=2:ref=3:me=umh:merange=32</code>
 - <code>svtav1</code>: <code>&lt;private repo&gt;/results/batch2_svtav1</code>, 30 files, crfs [22, 28, 34, 40, 46, 52], encoder <code>-c:v libsvtav1 -preset 6 -pix_fmt yuv420p -crf 22 -svtav1-params tune=1:aq-mode=0:keyint=300:lp=2</code>
 - <code>aom_on</code>: <code>&lt;private repo&gt;/results/aom_ablation/gm1_warp1</code>, encoder <code>aomenc --ivf --quiet --passes=1 --cpu-used=6 --end-usage=q --tune=psnr --kf-max-dist=300 --lag-in-frames=19 --cq-level=22 --threads=2 --enable-global-motion=1 --enable-warped-motion=1 -o - -</code>
 - <code>aom_off</code>: <code>&lt;private repo&gt;/results/aom_ablation/gm0_warp0</code>, encoder <code>aomenc --ivf --quiet --passes=1 --cpu-used=6 --end-usage=q --tune=psnr --kf-max-dist=300 --lag-in-frames=19 --cq-level=22 --threads=2 --enable-global-motion=0 --enable-warped-motion=0 -o - -</code></p>
-<h3 id="arms-real-footage">Arms, real footage</h3>
+<h4 id="arms-real-footage">Arms, real footage</h4>
 <table>
 <thead>
 <tr>
@@ -51271,7 +51278,7 @@ timings, aggregate rate-distortion curves, transform-only floors, and one sectio
 </tr>
 </tbody>
 </table>
-<h3 id="synthetic-motion-kinds">Synthetic motion kinds</h3>
+<h4 id="synthetic-motion-kinds">Synthetic motion kinds</h4>
 <table>
 <thead>
 <tr>
@@ -51350,7 +51357,7 @@ timings, aggregate rate-distortion curves, transform-only floors, and one sectio
 </tr>
 </tbody>
 </table>
-<h3 id="libaom-ablation-global-warped-motion-on-vs-off-synthetic-clips-crf-40-40-at-the-middle">libaom ablation: global + warped motion on vs off (synthetic clips, crf 40 / 40 at the middle)</h3>
+<h4 id="libaom-ablation-global-warped-motion-on-vs-off-synthetic-clips-kbps-db-at-cq-level-34-34-the-av1-same-bitrate-point-bd-square-off-vs-on-positive-the-square-needs-more-bytes-without-the-warps">libaom ablation: global + warped motion on vs off (synthetic clips; kbps / dB at cq-level 34 / 34, the AV1 same-bitrate point; BD square off vs on: positive = the square needs more bytes without the warps)</h4>
 <table>
 <thead>
 <tr>
@@ -51367,75 +51374,75 @@ timings, aggregate rate-distortion curves, transform-only floors, and one sectio
 <tbody>
 <tr>
 <td>static</td>
-<td style="text-align: right;">252 / 35.78</td>
-<td style="text-align: right;">261 / 35.72</td>
-<td style="text-align: right;">346 / 34.72</td>
-<td style="text-align: right;">365 / 34.66</td>
+<td style="text-align: right;">374 / 37.27</td>
+<td style="text-align: right;">385 / 37.22</td>
+<td style="text-align: right;">496 / 35.94</td>
+<td style="text-align: right;">522 / 35.90</td>
 <td style="text-align: right;">+92.4 %</td>
 <td style="text-align: right;">+93.4 %</td>
 <td style="text-align: right;">+4.1 %</td>
 </tr>
 <tr>
 <td>rot1</td>
-<td style="text-align: right;">323 / 35.07</td>
-<td style="text-align: right;">358 / 34.97</td>
-<td style="text-align: right;">340 / 34.86</td>
-<td style="text-align: right;">356 / 34.81</td>
+<td style="text-align: right;">461 / 36.63</td>
+<td style="text-align: right;">508 / 36.55</td>
+<td style="text-align: right;">484 / 36.17</td>
+<td style="text-align: right;">507 / 36.12</td>
 <td style="text-align: right;">+14.5 %</td>
 <td style="text-align: right;">+6.8 %</td>
 <td style="text-align: right;">+11.3 %</td>
 </tr>
 <tr>
 <td>rot3</td>
-<td style="text-align: right;">414 / 34.10</td>
-<td style="text-align: right;">483 / 33.84</td>
-<td style="text-align: right;">347 / 34.63</td>
-<td style="text-align: right;">357 / 34.60</td>
+<td style="text-align: right;">599 / 35.89</td>
+<td style="text-align: right;">690 / 35.67</td>
+<td style="text-align: right;">496 / 35.99</td>
+<td style="text-align: right;">513 / 35.96</td>
 <td style="text-align: right;">-21.0 %</td>
 <td style="text-align: right;">-31.9 %</td>
 <td style="text-align: right;">+19.6 %</td>
 </tr>
 <tr>
 <td>zoom_in</td>
-<td style="text-align: right;">221 / 37.10</td>
-<td style="text-align: right;">232 / 37.05</td>
-<td style="text-align: right;">300 / 36.26</td>
-<td style="text-align: right;">315 / 36.22</td>
+<td style="text-align: right;">322 / 38.64</td>
+<td style="text-align: right;">335 / 38.59</td>
+<td style="text-align: right;">427 / 37.73</td>
+<td style="text-align: right;">446 / 37.69</td>
 <td style="text-align: right;">+63.4 %</td>
 <td style="text-align: right;">+62.6 %</td>
 <td style="text-align: right;">+4.6 %</td>
 </tr>
 <tr>
 <td>zoom_out</td>
-<td style="text-align: right;">347 / 34.03</td>
-<td style="text-align: right;">363 / 33.96</td>
-<td style="text-align: right;">392 / 33.54</td>
-<td style="text-align: right;">411 / 33.49</td>
+<td style="text-align: right;">512 / 35.52</td>
+<td style="text-align: right;">535 / 35.47</td>
+<td style="text-align: right;">572 / 34.79</td>
+<td style="text-align: right;">596 / 34.74</td>
 <td style="text-align: right;">+35.0 %</td>
 <td style="text-align: right;">+33.9 %</td>
 <td style="text-align: right;">+5.0 %</td>
 </tr>
 <tr>
 <td>trans1</td>
-<td style="text-align: right;">277 / 35.39</td>
-<td style="text-align: right;">287 / 35.34</td>
-<td style="text-align: right;">363 / 34.54</td>
-<td style="text-align: right;">381 / 34.50</td>
+<td style="text-align: right;">409 / 36.98</td>
+<td style="text-align: right;">420 / 36.93</td>
+<td style="text-align: right;">516 / 35.86</td>
+<td style="text-align: right;">541 / 35.83</td>
 <td style="text-align: right;">+63.1 %</td>
 <td style="text-align: right;">+64.7 %</td>
 <td style="text-align: right;">+3.5 %</td>
 </tr>
 <tr>
 <td>trans3</td>
-<td style="text-align: right;">295 / 35.21</td>
-<td style="text-align: right;">303 / 35.16</td>
-<td style="text-align: right;">429 / 34.11</td>
-<td style="text-align: right;">448 / 34.06</td>
+<td style="text-align: right;">430 / 36.84</td>
+<td style="text-align: right;">441 / 36.80</td>
+<td style="text-align: right;">608 / 35.59</td>
+<td style="text-align: right;">636 / 35.56</td>
 <td style="text-align: right;">+88.7 %</td>
 <td style="text-align: right;">+91.0 %</td>
 <td style="text-align: right;">+3.2 %</td>
 </tr>
 </tbody>
 </table>
-<footer>polar-codec experiment &middot; 2026-09-06 &middot; <a href="../index.html">overview</a></footer>
+<footer>polar-codec experiment &middot; 2026-09-07 &middot; <a href="../index.html">overview</a></footer>
 </div></body></html>
